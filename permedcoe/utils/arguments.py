@@ -37,6 +37,9 @@ def parse_sys_argv():
                                                       aliases=['bb'],
                                                       help='Execute a building block.',                        # noqa: E501
                                                       formatter_class=argparse.ArgumentDefaultsHelpFormatter)  # noqa: E501
+    parser_execute_bb.add_argument(dest='name',
+                                   type=str,
+                                   help='Building Block to execute')
     __bb_execute_arguments__(parser_execute_bb)
     parser_execute_app = subparsers_execute.add_parser('application',
                                                        aliases=['app'],
