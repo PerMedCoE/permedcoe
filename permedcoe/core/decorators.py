@@ -222,13 +222,23 @@ class Task(object):
                     path, name = os.path.split(os.path.realpath(kwargs[k]))
                     update_paths[k] = os.path.join(path, name)
             elif v == DIRECTORY_IN or v == DIRECTORY_OUT:
-                if os.path.exists(kwargs[k]):
-                    path = os.path.realpath(kwargs[k])
-                elif v == DIRECTORY_OUT:
-                    os.mkdir(kwargs[k])
-                    path = os.path.realpath(kwargs[k])
+                if isinstance(kwargs[k], list):
+                    for element in kwargs[k]:
+                        if os.path.exists(element):
+                            path = os.path.realpath(element)
+                        elif v == DIRECTORY_OUT:
+                            os.mkdir(element)
+                            path = os.path.realpath(element)
+                        else:
+                            raise Exception("Input directory does not exist: %s" % str(element))  # noqa: E503
                 else:
-                    raise Exception("Input directory does not exist.")
+                    if os.path.exists(kwargs[k]):
+                        path = os.path.realpath(kwargs[k])
+                    elif v == DIRECTORY_OUT:
+                        os.mkdir(kwargs[k])
+                        path = os.path.realpath(kwargs[k])
+                    else:
+                        raise Exception("Input directory does not exist: %s" % str(element))  # noqa: E503
             else:
                 raise Exception("Unexpected task tag found.")
             # Relative path to absolute

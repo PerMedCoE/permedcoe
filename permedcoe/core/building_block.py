@@ -103,7 +103,11 @@ class PerMedBB(object):
         scc = self.sing_command_comp
         for c in order:
             if isinstance(scc[c], list):
-                command = command + " " + " ".join(scc[c])
+                for elem_scc in scc[c]:
+                    if isinstance(elem_scc, list):
+                        command = command + " " + " ".join(elem_scc)
+                    else:
+                        command = command + " " + elem_scc
             else:
                 command = command + " " + scc[c]
         if debug:
