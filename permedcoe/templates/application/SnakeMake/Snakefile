@@ -1,0 +1,11 @@
+# TODO: Declare the building blocks to be used as rules.
+
+rule BUILDINGBLOCK:
+    input:
+        dataset="/path/to/dataset",
+        config="/path/to/conf.yaml"
+    output:
+        directory("output")
+    shell:
+        # TODO: Change bb to the building block name.
+        "permedcoe execute building_block bb {input.dataset} {output} {input.config}"
