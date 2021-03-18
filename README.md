@@ -35,13 +35,13 @@ There are two ways to install this package (from Pypi and manually):
 
   This package is **NOT YET** publicly available in Pypi:
 
-  ```bash
+  ```shell
   pip install permedcoe
   ```
 
   or more specifically:
 
-  ```bash
+  ```shell
   python3 -m pip install permedcoe
   ```
 
@@ -49,7 +49,7 @@ There are two ways to install this package (from Pypi and manually):
 
   This package provides an automatic installation script:
 
-  ```bash
+  ```shell
   ./install.sh
   ```
 
@@ -60,7 +60,7 @@ There are two ways to install this package (from Pypi and manually):
 
   This package provides the `permedcoe` command:
 
-  ```bash
+  ```shell
   $ permedcoe -h
   usage: permedcoe [-h] [-d] [-l {debug,info,warning,error,critical}] {execute,x,template,t} ...
 
@@ -79,7 +79,7 @@ There are two ways to install this package (from Pypi and manually):
 
 - It enables to execute single building blocks or applications:
 
-  ```bash
+  ```shell
   $ permedcoe execute -h
   usage: permedcoe execute [-h] {building_block,bb,application,app} ...
 
@@ -95,7 +95,7 @@ There are two ways to install this package (from Pypi and manually):
 
   - In particular for building blocks:
 
-    ```bash
+    ```shell
     $ permedcoe execute building_block -h
     usage: permedcoe execute building_block [-h] [-i INPUT [INPUT ...]] [-o OUTPUT [OUTPUT ...]]
                                         [-c CONFIG] [-d] [-l {debug,info,warning,error,critical}]
@@ -125,7 +125,7 @@ There are two ways to install this package (from Pypi and manually):
 
   - In particular for building blocks:
 
-    ```bash
+    ```shell
     permedcoe execute application -h None)
     usage: permedcoe execute application [-h] [-w {none,pycompss,nextflow,snakemake}]
                                         [-f FLAGS [FLAGS ...]]
@@ -145,7 +145,7 @@ There are two ways to install this package (from Pypi and manually):
 
 - And it is also available to create a skeleton of a building block or an application:
 
-  ```bash
+  ```shell
   $ permedcoe template -h
   usage: permedcoe template [-h] [-t {all,pycompss,nextflow,snakemake}]
                             {bb,building_block,app,application} name
@@ -199,25 +199,25 @@ There are two ways to uninstall this package, that depends on the way that it wa
 
 - From Pypi:
 
-  ```bash
+  ```shell
   pip uninstall permedcoe
   ```
 
   or more specifically:
 
-  ```bash
+  ```shell
   python3 -m pip uninstall permedcoe
   ```
 
 - From manual installation (using `install.sh`):
 
-  ```bash
+  ```shell
   ./uninstall.sh
   ```
 
   And then the folder can be cleaned as well using the `clean.sh` script.
 
-  ```bash
+  ```shell
   ./clean.sh
   ```
 
@@ -225,8 +225,7 @@ There are two ways to uninstall this package, that depends on the way that it wa
 
 ### Building block
 
-If you are willing to implement your Building Block (BB), check the [Sample Building Block](sample_BB)
-or the `gromacs_BBs` package.
+If you are willing to implement your Building Block (BB), check the [basic_application](https://github.com/PerMedCoE/basic_application) or the [Lysozyme_in_water](https://github.com/PerMedCoE/Lysozyme_in_water) repositories, where you will find BB and application samples.
 
 ## License
 
