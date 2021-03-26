@@ -4,6 +4,7 @@ to interact with the container infrastructure (Singularity).
 """
 
 import os
+import logging
 
 
 class PerMedBB(object):
@@ -82,24 +83,28 @@ class PerMedBB(object):
             self.sing_command_comp["mounts"] = \
                 self.sing_command_comp["mounts"] + ",{}:{}".format(s, t)
 
-    def launch(self, shell=False, debug=False):
+    def launch(self, shell=False, run_in_container=True):
         """ Executes the binary into the singularity container.
 
         Args:
             shell (bool, optional): Action shell. Defaults to False.
-            debug (bool, optional): Set debug. Defaults to False.
+            run_in_container (bool, optional): Launch execution in container.
         """
-        order = ["base",
-                 "action",
-                 "action_flags",
-                 "mounts",
-                 "envs",
-                 "sif",
-                 "exe",
-                 "flags"]
         command = ""
-        if shell:
-            self.sing_command_comp["action"] = "shell"
+        if run_in_container:
+            order = ["base",
+                    "action",
+                    "action_flags",
+                    "mounts",
+                    "envs",
+                    "sif",
+                    "exe",
+                    "flags"]
+            if shell:
+                self.sing_command_comp["action"] = "shell"
+        else:
+            order = ["exe",
+                     "flags"]
         scc = self.sing_command_comp
         for c in order:
             if isinstance(scc[c], list):
@@ -110,6 +115,5 @@ class PerMedBB(object):
                         command = command + " " + elem_scc
             else:
                 command = command + " " + scc[c]
-        if debug:
-            print("Launching the command: %s" % command)
+        logging.info("Launching the command: %s" % command)
         os.system(command)

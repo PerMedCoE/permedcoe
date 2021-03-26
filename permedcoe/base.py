@@ -2,6 +2,7 @@ from permedcoe.utils.arguments import single_bb_sysarg_parser as __bb_parser__
 from permedcoe.utils.preproc import preprocessing as __preprocessing__
 from permedcoe.utils.log import init_logging as __init_logging__
 from permedcoe.utils.environ import get_environment as __get_environment__
+import permedcoe.core.environment as __cmd_flags__
 
 
 def get_environment():
@@ -34,6 +35,10 @@ def invoker(function) -> None:
         None
     """
     arguments = __bb_parser__()
+    # Set execution related conditions
+    __cmd_flags__.DEBUG = arguments.debug
+    __cmd_flags__.DISABLE_CONTAINER = arguments.disable_container
+    set_debug(arguments.debug)
     # Grab input and output
     in_path = arguments.input
     out_path = arguments.output

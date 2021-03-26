@@ -41,6 +41,7 @@ def execute_application(arguments):
     Args:
         arguments (Namespace): System arguments.
     """
+    # Application related arguments
     app_name = arguments.name
     app_parameters = arguments.parameters
     workflow_manager = arguments.workflow_manager

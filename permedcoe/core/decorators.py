@@ -11,6 +11,7 @@ import logging
 from collections import OrderedDict
 
 from permedcoe.core.building_block import PerMedBB
+import permedcoe.core.environment as cmd_flags
 
 # Environment variable names
 from permedcoe.core.constants import PERMEDCOE_TMPDIR
@@ -41,7 +42,11 @@ class Container(object):
         def wrapped_f(*args, **kwargs):
             # args and kwargs are the function invocation parameters
             # Delegate the needed info to the task through the **kwargs.
-            kwargs["engine"] = self.kwargs["engine"]
+            if "engine" in self.kwargs:
+                kwargs["engine"] = self.kwargs["engine"]
+            else:
+                # Default engine if not specified
+                kwargs["engine"] = "SINGULARITY"
             kwargs["image"] = self.kwargs["image"]
             return f(*args, **kwargs)
         return wrapped_f
@@ -139,17 +144,27 @@ class Task(object):
             # Instead, takes all learnt from previous decorators, and acts:
             # Deploys the container and executes the binary
 
+            run_in_container = True
+            if "engine" not in kwargs or cmd_flags.DISABLE_CONTAINER:
+                # The @container has not been defined -> Disable running in container
+                run_in_container = False
+
             # Pop the info from upper decorators:
-            self.engine = kwargs.pop("engine")
-            self.image = kwargs.pop("image")
+            if run_in_container:
+                self.engine = kwargs.pop("engine")
+                self.image = kwargs.pop("image")
+            else:
+                self.engine = None
+                self.image = None
             self.runner = kwargs.pop("runner", None)
             self.binary = kwargs.pop("binary")
             self.computing_nodes = kwargs.pop("computing_nodes", 1)
             self.computing_units = kwargs.pop("computing_units", 1)
             self.env_vars = kwargs.pop("environment")
             logging.debug(SEPARATOR)
-            logging.debug("Container engine          : %s" % self.engine)
-            logging.debug("Container image           : %s" % self.image)
+            if run_in_container:
+                logging.debug("Container engine          : %s" % self.engine)
+                logging.debug("Container image           : %s" % self.image)
             logging.debug("Container runner          : %s" % self.runner)
             logging.debug("Container binary          : %s" % self.binary)
             logging.debug("Container computing_nodes : %s" % self.computing_nodes)
@@ -162,7 +177,8 @@ class Task(object):
             flags = OrderedDict(defaults, **kwargs)
             flags_list = list(flags.values())
             logging.debug("Provided flags: %s" % str(kwargs))
-            logging.debug("Default flags: %s" % str(defaults))
+            # To increase debugging:
+            # logging.debug("Default flags: %s" % str(defaults))
             logging.debug("User flags: %s" % str(flags_list))
             logging.debug(SEPARATOR)
 
@@ -176,11 +192,11 @@ class Task(object):
                     flags[k] = v
                 flags_list = list(flags.values())
 
-            logging.debug("User flags: %s" % str(flags_list))
-            logging.debug("Mount paths:")
-            for path in mount_paths:
-                logging.debug("- %s" % path)
-            logging.debug(SEPARATOR)
+            if run_in_container:
+                logging.debug("Mount paths:")
+                for path in mount_paths:
+                    logging.debug("- %s" % path)
+                logging.debug(SEPARATOR)
 
             # Act:
             BB = PerMedBB(self.image,
@@ -192,8 +208,7 @@ class Task(object):
                           user_mount_paths,
                           self.env_vars,
                           flags_list)
-            debug = True if logging.getLevelName == "DEBUG" else False
-            BB.launch(debug=debug)
+            BB.launch(run_in_container=run_in_container)
         return wrapped_f
 
     def __find_mount_paths__(self, kwargs):
