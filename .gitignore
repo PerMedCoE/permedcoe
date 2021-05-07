@@ -181,3 +181,6 @@ dkms.conf
 
 # Avoid installation txts
 installed_files.txt
+
+# Avoid sphix folders
+_build/
