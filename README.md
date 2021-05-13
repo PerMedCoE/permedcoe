@@ -168,11 +168,11 @@ The `permedcoe` package provides a set of public decorators, parameter type defi
 - Public decorators:
 
     ```python
-    from permedcoe import Container
-    from permedcoe import Constraint
-    from permedcoe import Binary
-    from permedcoe import Mpi
-    from permedcoe import Task
+    from permedcoe import container
+    from permedcoe import constraint
+    from permedcoe import binary
+    from permedcoe import mpi
+    from permedcoe import task
     ```
 
 - Parameter type definition:

@@ -285,6 +285,14 @@ class Task(object):
         })
 
 
+# Naming convention with lowercase
+task = Task
+binary = Binary
+container = Container
+mpi = Mpi
+constraint = Constraint
+
+# Parameter definitons
 FILE_IN = "FILE_IN"
 FILE_OUT = "FILE_OUT"
 DIRECTORY_IN = "DIRECTORY_IN"

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-from permedcoe import Container        # To define container related needs
-from permedcoe import Binary           # To define binary to execute related needs
-from permedcoe import Task             # To define task related needs
+from permedcoe import container        # To define container related needs
+from permedcoe import binary           # To define binary to execute related needs
+from permedcoe import task             # To define task related needs
 
 from permedcoe import FILE_IN          # To define file type and direction
 from permedcoe import FILE_OUT         # To define file type and direction
@@ -30,9 +30,9 @@ def function_name(*args, **kwargs):
     # TODO: (optional) Pure python code calling to PyCOMPSs tasks (that can be defined in this file or in another).
 
 
-@Container(engine="SINGULARITY", image=SAMPLE_CONTAINER)
-@Binary(binary="/path/to/my_binary")                      # TODO: Define the binary to be used.
-@Task(dataset=FILE_IN, output=FILE_OUT)                   # TODO: Define the inputs and output parameters.
+@container(engine="SINGULARITY", image=SAMPLE_CONTAINER)
+@binary(binary="/path/to/my_binary")                      # TODO: Define the binary to be used.
+@task(dataset=FILE_IN, output=FILE_OUT)                   # TODO: Define the inputs and output parameters.
 def building_block_task(dataset_flag="-d", dataset=None,  # TODO: Define a representative task name
                         output_flag="-o", output=None,
                         operation="-x"):                  # TODO: Define the binary parameters

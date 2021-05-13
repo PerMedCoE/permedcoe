@@ -5,10 +5,11 @@
 # Decorator selector
 try:
     # Running with PyCOMPSs with take these imports
-    from pycompss.api.container import Container
-    from pycompss.api.constraint import Constraint
-    from pycompss.api.binary import Binary
-    from pycompss.api.task import Task
+    from pycompss.api.container import container
+    from pycompss.api.constraint import constraint
+    from pycompss.api.binary import binary
+    from pycompss.api.task import task
+    from pycompss.api.mpi import mpi
     from pycompss.api.parameter import FILE_IN
     from pycompss.api.parameter import FILE_OUT
     from pycompss.api.parameter import DIRECTORY_IN
@@ -19,10 +20,11 @@ try:
     # raise ImportError  # NOSONAR
 except ImportError:
     # Without PyCOMPSs it will take the core
-    from permedcoe.core.decorators import Container
-    from permedcoe.core.decorators import Constraint
-    from permedcoe.core.decorators import Binary
-    from permedcoe.core.decorators import Task
+    from permedcoe.core.decorators import container
+    from permedcoe.core.decorators import constraint
+    from permedcoe.core.decorators import binary
+    from permedcoe.core.decorators import task
+    from permedcoe.core.decorators import mpi
     from permedcoe.core.decorators import FILE_IN
     from permedcoe.core.decorators import FILE_OUT
     from permedcoe.core.decorators import DIRECTORY_IN

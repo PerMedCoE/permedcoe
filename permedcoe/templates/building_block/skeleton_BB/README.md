@@ -115,9 +115,9 @@ There are a set of rules to implement a PerMedCoE compliant Building Block:
 
     ```Python
     from PerMedCoE_BB import invoke
-    from PerMedCoE_BB import Container
-    from PerMedCoE_BB import Binary
-    from PerMedCoE_BB import Task
+    from PerMedCoE_BB import container
+    from PerMedCoE_BB import binary
+    from PerMedCoE_BB import task
     from PerMedCoE_BB import FILE_IN
     from PerMedCoE_BB import FILE_OUT
     from PerMedCoE_BB import DIRECTORY_IN
@@ -129,9 +129,9 @@ There are a set of rules to implement a PerMedCoE compliant Building Block:
         # Python code calling to tasks (see PyCOMPSs)
         ...
 
-    @Container(engine="SINGULARITY", image=CONTAINER)
-    @Binary(binary="/path/to/binary")
-    @Task(dataset=FILE_IN, output=FILE_OUT)
+    @container(engine="SINGULARITY", image=CONTAINER)
+    @binary(binary="/path/to/binary")
+    @task(dataset=FILE_IN, output=FILE_OUT)
     def skeleton_BB_task(dataset_flag="-d", dataset=None,
                        output_flag="-o", output, ...):
         # Equivalent to:
@@ -178,7 +178,7 @@ There are a set of best practices suggested to BB developers:
   - [pep8](https://www.python.org/dev/peps/pep-0008/)
   - [black](https://github.com/psf/black)
 
-- Container best practices:
+- container best practices:
   - one
   - two
 
