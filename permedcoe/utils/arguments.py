@@ -85,19 +85,26 @@ def parse_sys_argv():
                                             aliases=['t'],
                                             help='Shows an example of the requested template.',      # noqa: E501
                                             formatter_class=argparse.ArgumentDefaultsHelpFormatter)  # noqa: E501
-    parser_template.add_argument(dest='template',
-                                 type=str,
-                                 choices=['bb', 'building_block', 'app', 'application'],             # noqa: E501
-                                 default='bb',
-                                 help='Creates a Building Block or Application template.')           # noqa: E501
-    parser_template.add_argument(dest='name',
-                                 type=str,
-                                 help='Building Block or Application name.')
-    parser_template.add_argument('-t', '--type',
-                                 choices=["all", "pycompss", "nextflow", "snakemake"],               # noqa: E501
-                                 default="all",
-                                 type=str,
-                                 help='Application type.')
+    subparser_template = parser_template.add_subparsers(dest='template')
+    parser_template_bb = subparser_template.add_parser('building_block',
+                                                       aliases=['bb'],
+                                                       help='Create a building block template.',                # noqa: E501
+                                                       formatter_class=argparse.ArgumentDefaultsHelpFormatter)  # noqa: E501
+    parser_template_bb.add_argument(dest='name',
+                                    type=str,
+                                    help='Building Block to create')
+    parser_template_app = subparser_template.add_parser('application',
+                                                        aliases=['app'],
+                                                        help='Create an application template.',                  # noqa: E501
+                                                        formatter_class=argparse.ArgumentDefaultsHelpFormatter)  # noqa: E501
+    parser_template_app.add_argument(dest='name',
+                                     type=str,
+                                     help='Application to create')
+    parser_template_app.add_argument('-t', '--type',
+                                     choices=["all", "pycompss", "nextflow", "snakemake"],  # noqa: E501
+                                     default="all",
+                                     type=str,
+                                     help='Application type.')
 
     # Check if the user does not include any argument
     if len(sys.argv) < 2:

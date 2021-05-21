@@ -32,13 +32,19 @@ def main():
             print("Submit Application")
         raise NotImplementedError
     if arguments.action in ["template", "t"]:
-        if debug:
-            print("Creating template")
+        if arguments.template in ["building_block", "bb"]:
+            app_type = None
+            if debug:
+                print("Creating building block template")
+        else:
+            app_type = arguments.type
+            if debug:
+                print("Creating application template")
         __create_template__(arguments.debug,
                             arguments.log_level,
                             arguments.template,
                             arguments.name,
-                            arguments.type)
+                            app_type)
 
 
 if __name__ == "__main__":
