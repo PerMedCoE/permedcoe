@@ -295,6 +295,7 @@ constraint = Constraint
 # Parameter definitons
 FILE_IN = "FILE_IN"
 FILE_OUT = "FILE_OUT"
+FILE_INOUT = "FILE_INOUT"
 DIRECTORY_IN = "DIRECTORY_IN"
 DIRECTORY_OUT = "DIRECTORY_OUT"
 Type = "type"

@@ -12,6 +12,7 @@ try:
     from pycompss.api.mpi import mpi
     from pycompss.api.parameter import FILE_IN
     from pycompss.api.parameter import FILE_OUT
+    from pycompss.api.parameter import FILE_INOUT
     from pycompss.api.parameter import DIRECTORY_IN
     from pycompss.api.parameter import DIRECTORY_OUT
     from pycompss.api.parameter import Type
@@ -27,6 +28,7 @@ except ImportError:
     from permedcoe.core.decorators import mpi
     from permedcoe.core.decorators import FILE_IN
     from permedcoe.core.decorators import FILE_OUT
+    from permedcoe.core.decorators import FILE_INOUT
     from permedcoe.core.decorators import DIRECTORY_IN
     from permedcoe.core.decorators import DIRECTORY_OUT
     from permedcoe.core.decorators import Type
