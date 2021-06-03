@@ -33,7 +33,7 @@ class PerMedBB(object):
         self.sing_command_comp = {}
         self.sing_command_comp["base"] = "singularity --silent"
         self.sing_command_comp["action"] = "exec"
-        self.sing_command_comp["action_flags"] = "--contain --cleanenv"
+        self.sing_command_comp["action_flags"] = "--contain --cleanenv --pwd " + os.getcwd()
         self.sing_command_comp["sif"] = img_path
         if mpi_runner:
             # MPI execution within the container
