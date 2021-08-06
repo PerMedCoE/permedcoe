@@ -236,7 +236,7 @@ class Task(object):
                 else:
                     path, name = os.path.split(os.path.realpath(kwargs[k]))
                     update_paths[k] = os.path.join(path, name)
-            elif v == DIRECTORY_IN or v == DIRECTORY_OUT:
+            elif v == DIRECTORY_IN or v == DIRECTORY_INOUT or v == DIRECTORY_OUT:
                 if isinstance(kwargs[k], list):
                     for element in kwargs[k]:
                         if os.path.exists(element):
@@ -301,6 +301,7 @@ FILE_OUT = "FILE_OUT"
 FILE_INOUT = "FILE_INOUT"
 DIRECTORY_IN = "DIRECTORY_IN"
 DIRECTORY_OUT = "DIRECTORY_OUT"
+DIRECTORY_INOUT = "DIRECTORY_INOUT"
 Type = "type"
 StdIOStream = "StdIOStream"
 STDIN = None

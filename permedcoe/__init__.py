@@ -15,6 +15,7 @@ try:
     from pycompss.api.parameter import FILE_INOUT
     from pycompss.api.parameter import DIRECTORY_IN
     from pycompss.api.parameter import DIRECTORY_OUT
+    from pycompss.api.parameter import DIRECTORY_INOUT
     from pycompss.api.parameter import Type
     from pycompss.api.parameter import StdIOStream
     from pycompss.api.parameter import STDIN
@@ -31,6 +32,7 @@ except ImportError:
     from permedcoe.core.decorators import FILE_INOUT
     from permedcoe.core.decorators import DIRECTORY_IN
     from permedcoe.core.decorators import DIRECTORY_OUT
+    from permedcoe.core.decorators import DIRECTORY_INOUT
     from permedcoe.core.decorators import Type
     from permedcoe.core.decorators import StdIOStream
     from permedcoe.core.decorators import STDIN
