@@ -12,6 +12,7 @@ from collections import OrderedDict
 
 from permedcoe.core.building_block import PerMedBB
 import permedcoe.core.environment as cmd_flags
+from permedcoe.utils.exceptions import ContainerImageException
 
 # Environment variable names
 from permedcoe.core.constants import PERMEDCOE_TMPDIR
@@ -146,7 +147,8 @@ class Task(object):
 
             run_in_container = True
             if "engine" not in kwargs or cmd_flags.DISABLE_CONTAINER:
-                # The @container has not been defined -> Disable running in container
+                # The @container has not been defined, so
+                # disable running in container
                 run_in_container = False
 
             # Pop the info from upper decorators:
@@ -167,8 +169,8 @@ class Task(object):
                 logging.debug("Container image           : %s" % self.image)
             logging.debug("Container runner          : %s" % self.runner)
             logging.debug("Container binary          : %s" % self.binary)
-            logging.debug("Container computing_nodes : %s" % self.computing_nodes)
-            logging.debug("Container computing_units : %s" % self.computing_units)
+            logging.debug("Container computing_nodes : %s" % self.computing_nodes)  # noqa: E503
+            logging.debug("Container computing_units : %s" % self.computing_units)  # noqa: E503
             logging.debug("Container env vars        : %s" % self.env_vars)
             logging.debug(SEPARATOR)
 
@@ -181,6 +183,11 @@ class Task(object):
             # logging.debug("Default flags: %s" % str(defaults))
             logging.debug("User flags: %s" % str(flags_list))
             logging.debug(SEPARATOR)
+
+            # Checks:
+            #  - Container image
+            if not os.path.isfile(self.image):
+                raise ContainerImageException(self.image)
 
             # Look for mount paths:
             mount_paths, update_paths, user_mount_paths = \
@@ -236,7 +243,7 @@ class Task(object):
                 else:
                     path, name = os.path.split(os.path.realpath(kwargs[k]))
                     update_paths[k] = os.path.join(path, name)
-            elif v == DIRECTORY_IN or v == DIRECTORY_INOUT or v == DIRECTORY_OUT:
+            elif v == DIRECTORY_IN or v == DIRECTORY_INOUT or v == DIRECTORY_OUT:  # noqa: E503
                 if isinstance(kwargs[k], list):
                     for element in kwargs[k]:
                         if os.path.exists(element):

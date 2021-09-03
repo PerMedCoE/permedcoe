@@ -33,7 +33,7 @@ class PerMedBB(object):
         self.sing_command_comp = {}
         self.sing_command_comp["base"] = "singularity --silent"
         self.sing_command_comp["action"] = "exec"
-        self.sing_command_comp["action_flags"] = "--contain --cleanenv --pwd " + os.getcwd()
+        self.sing_command_comp["action_flags"] = "--contain --cleanenv --pwd " + os.getcwd()  # noqa: E503
         self.sing_command_comp["sif"] = img_path
         if mpi_runner:
             # MPI execution within the container
@@ -93,13 +93,13 @@ class PerMedBB(object):
         command = ""
         if run_in_container:
             order = ["base",
-                    "action",
-                    "action_flags",
-                    "mounts",
-                    "envs",
-                    "sif",
-                    "exe",
-                    "flags"]
+                     "action",
+                     "action_flags",
+                     "mounts",
+                     "envs",
+                     "sif",
+                     "exe",
+                     "flags"]
             if shell:
                 self.sing_command_comp["action"] = "shell"
         else:
