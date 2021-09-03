@@ -12,6 +12,7 @@ from collections import OrderedDict
 
 from permedcoe.core.building_block import PerMedBB
 import permedcoe.core.environment as cmd_flags
+from permedcoe.utils.exceptions import ContainerImageException
 
 # Environment variable names
 from permedcoe.core.constants import PERMEDCOE_TMPDIR
@@ -181,6 +182,11 @@ class Task(object):
             # logging.debug("Default flags: %s" % str(defaults))
             logging.debug("User flags: %s" % str(flags_list))
             logging.debug(SEPARATOR)
+
+            # Checks:
+            #  - Container image
+            if not os.path.isfile(self.image):
+                raise ContainerImageException(self.image)
 
             # Look for mount paths:
             mount_paths, update_paths, user_mount_paths = \
