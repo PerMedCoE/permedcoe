@@ -6,7 +6,6 @@ from permedcoe.utils.environ import set_environment
 import permedcoe.core.environment as cmd_flags
 
 
-
 def preprocessing(arguments):
     # Parse configuration file
     if arguments.config:

@@ -190,6 +190,7 @@ def __bb_execute_arguments__(parser):
     parser.add_argument("--mount_points",
                         help="Comma separated alias:folder to be mounted in the container",  # noqa: E501
                         type=str)
+    # Hidden flag for advanced users
     parser.add_argument("--disable_container",
-                        help=argparse.SUPPRESS,  # Hidden flag for advanced users
+                        help=argparse.SUPPRESS,
                         action="store_true")
