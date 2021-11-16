@@ -1,19 +1,24 @@
 #!/usr/bin/python3
 
+# Decorator imports
+from permedcoe import constraint       # To define constraints needs (e.g. number of cores)
 from permedcoe import container        # To define container related needs
 from permedcoe import binary           # To define binary to execute related needs
+from permedcoe import mpi              # To define an mpi binary to execute related needs (can not be used with @binary)
 from permedcoe import task             # To define task related needs
-
+# @task supported types
 from permedcoe import FILE_IN          # To define file type and direction
 from permedcoe import FILE_OUT         # To define file type and direction
+from permedcoe import FILE_INOUT       # To define file type and direction
 from permedcoe import DIRECTORY_IN     # To define directory type and direction
 from permedcoe import DIRECTORY_OUT    # To define directory type and direction
-
+from permedcoe import DIRECTORY_INOUT  # To define directory type and direction
+# Other permedcoe available functionalities
 from permedcoe import get_environment  # Get variables from invocation (tmpdir, processes, gpus, memory)
 
 
 # Single and global container definition for this building block
-SAMPLE_CONTAINER = "/path/to/image.sif"  # TODO: Define your container
+SAMPLE_CONTAINER = "/PATH/TO/container/sample.sif"  # TODO: Define your container
 
 
 def function_name(*args, **kwargs):
@@ -31,13 +36,13 @@ def function_name(*args, **kwargs):
 
 
 @container(engine="SINGULARITY", image=SAMPLE_CONTAINER)
-@binary(binary="/path/to/my_binary")                      # TODO: Define the binary to be used.
-@task(dataset=FILE_IN, output=FILE_OUT)                   # TODO: Define the inputs and output parameters.
-def building_block_task(dataset_flag="-d", dataset=None,  # TODO: Define a representative task name
-                        output_flag="-o", output=None,
-                        operation="-x"):                  # TODO: Define the binary parameters
+@binary(binary="cp")                                        # TODO: Define the binary to be used.
+@task(input_file=FILE_IN, output_file=FILE_OUT)             # TODO: Define the inputs and output parameters.
+def building_block_task(input_file=None,                    # TODO: Define a representative task name
+                        output_file=None,
+                        verbose="-v"):                      # TODO: Define the binary parameters
     # The Definition is equal to:
-    #    /path/to/my_binary -d dataset -o output -x
+    #    cp <input_file> <output_file> -v
     # Empty function since it represents a binary execution:
     pass
 
@@ -53,8 +58,13 @@ def invoke(input, output, config):
         None
     """
     # TODO: Declare how to run the binary specification (convert config into building_block_task call)
-    operation = config["operation"]
-    # env_vars = get_environment()  # NOSONAR - Retrieves the extra flags.
-    building_block_task(dataset=input,
-                        output=output,
-                        operation=operation)
+    # Sample config parameter get:
+    #     operation = config["operation"]
+    # Then operation can be used to tune the building_block_task parameters or even be a parameter.
+    # Sample permedcoe environment get:
+    #     env_vars = get_environment()
+    # Retrieves the extra flags from permedcoe.
+    input_file = input[0]
+    output_file = output[0]
+    building_block_task(input_file=input_file,
+                        output_file=output_file)
