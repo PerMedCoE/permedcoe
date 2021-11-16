@@ -180,8 +180,10 @@ The `permedcoe` package provides a set of public decorators, parameter type defi
     ```python
     from permedcoe import FILE_IN
     from permedcoe import FILE_OUT
+    from permedcoe import FILE_INOUT
     from permedcoe import DIRECTORY_IN
     from permedcoe import DIRECTORY_OUT
+    from permedcoe import DIRECTORY_INOUT
     ```
 
 - Functions:
@@ -225,7 +227,12 @@ There are two ways to uninstall this package, that depends on the way that it wa
 
 ### Building block
 
-If you are willing to implement your Building Block (BB), check the [basic_application](https://github.com/PerMedCoE/basic_application) or the [Lysozyme_in_water](https://github.com/PerMedCoE/Lysozyme_in_water) repositories, where you will find BB and application samples.
+If you are willing to implement your Building Block (BB), check:
+
+- [Documentation](https://permedcoe.readthedocs.io/en/latest/)
+- [Tutorial](https://permedcoe.readthedocs.io/en/latest/04_tutorial/tutorial.html)
+- [basic_application](https://github.com/PerMedCoE/basic_application)
+- [Lysozyme_in_water](https://github.com/PerMedCoE/Lysozyme_in_water) repositories, where you will find BB and application samples.
 
 ## License
 
