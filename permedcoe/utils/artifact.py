@@ -1,7 +1,9 @@
 import os
 from permedcoe.core.constants import SEPARATOR
 
-DO_NOT_PARSE = (".pyc")
+DO_NOT_PARSE = (".pyc", ".def", ".sif")
+PARSING_KEY = "NEW_NAME"
+PARSING_PATH = "/PATH/TO/"
 
 
 def adapt_name(name, path):
@@ -12,13 +14,15 @@ def adapt_name(name, path):
         name (str): Name to personalize the files.
         path (str): Path to find the files.
     """
+    template_path = path + "/"
     for directory_name, dirs, files in os.walk(path):
         for file_name in files:
             if not file_name.endswith(DO_NOT_PARSE):
                 file_path = os.path.join(directory_name, file_name)
                 with open(file_path) as f:
                     s = f.read()
-                s = s.replace("NEW_NAME", name)
+                s = s.replace(PARSING_KEY, name)
+                s = s.replace(PARSING_PATH, template_path)
                 with open(file_path, "w") as f:
                     f.write(s)
 
