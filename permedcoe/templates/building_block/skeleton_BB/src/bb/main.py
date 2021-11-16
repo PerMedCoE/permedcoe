@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import os
 
 # Decorator imports
 from permedcoe import constraint       # To define constraints needs (e.g. number of cores)
@@ -38,12 +37,12 @@ def function_name(*args, **kwargs):
 
 @container(engine="SINGULARITY", image=SAMPLE_CONTAINER)
 @binary(binary="cp")                                        # TODO: Define the binary to be used.
-@task(dataset=FILE_IN, output_dir=DIRECTORY_OUT)            # TODO: Define the inputs and output parameters.
-def building_block_task(dataset=None,                       # TODO: Define a representative task name
-                        target_flag="-t", output_dir=None,
+@task(input_file=FILE_IN, output_file=FILE_OUT)             # TODO: Define the inputs and output parameters.
+def building_block_task(input_file=None,                    # TODO: Define a representative task name
+                        output_file=None,
                         verbose="-v"):                      # TODO: Define the binary parameters
     # The Definition is equal to:
-    #    cp <dataset> -t <output_dir> -v
+    #    cp <input_file> <output_file> -v
     # Empty function since it represents a binary execution:
     pass
 
@@ -65,8 +64,7 @@ def invoke(input, output, config):
     # Sample permedcoe environment get:
     #     env_vars = get_environment()
     # Retrieves the extra flags from permedcoe.
-    dataset = input[0]
-    output_dir = output[0]
-    os.mkdir(output_dir)
-    building_block_task(dataset=dataset,
-                        output_dir=output_dir)
+    input_file = input[0]
+    output_file = output[0]
+    building_block_task(input_file=input_file,
+                        output_file=output_file)
