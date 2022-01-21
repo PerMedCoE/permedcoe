@@ -267,7 +267,7 @@ class Task(object):
             mount_paths.append(path)
         # Look into the environment
         if PERMEDCOE_TMPDIR in os.environ:
-            mount_paths.append(os.environ(PERMEDCOE_TMPDIR))
+            mount_paths.append(os.environ[PERMEDCOE_TMPDIR])
         user_mount_paths = None
         if PERMEDCOE_MOUNT_POINTS in os.environ:
             user_mount_paths = os.environ[PERMEDCOE_MOUNT_POINTS]
