@@ -2,10 +2,6 @@
 
 echo "Uninstalling..."
 
-# python3 -m pip uninstall NEW_NAME
-
-xargs rm -rf < installed_files.txt
-
-rm installed_files.txt
+python3 -m pip uninstall -y NEW_NAME-BB
 
 echo "----- Uninstall finished -----"
