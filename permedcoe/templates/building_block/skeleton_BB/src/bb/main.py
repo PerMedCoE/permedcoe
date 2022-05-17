@@ -22,7 +22,7 @@ SAMPLE_CONTAINER = "/PATH/TO/container/sample.sif"  # TODO: Define your containe
 
 
 def function_name(*args, **kwargs):
-    """ Extended python interface:
+    """Extended python interface:
     To be used only with PyCOMPSs - Enables to define a workflow within the building block.
     Tasks are not forced to be binaries: PyCOMPSs supports tasks that are pure python code.
 
@@ -41,14 +41,22 @@ def function_name(*args, **kwargs):
 def building_block_task(input_file=None,                    # TODO: Define a representative task name
                         output_file=None,
                         verbose="-v"):                      # TODO: Define the binary parameters
-    # The Definition is equal to:
-    #    cp <input_file> <output_file> -v
-    # Empty function since it represents a binary execution:
+    """Summary.
+
+    The Definition is equal to:
+       cp <input_file> <output_file> -v
+    Empty function since it represents a binary execution:
+
+    :param input_file: Input file description, defaults to None
+    :type input_file: str, optional
+    :param verbose: Verbose description, defaults to "-v"
+    :type verbose: str, optional
+    """
     pass
 
 
 def invoke(input, output, config):
-    """ Common interface.
+    """Common interface.
 
     Args:
         input (str): Input file path.

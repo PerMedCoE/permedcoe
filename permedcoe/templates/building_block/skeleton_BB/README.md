@@ -5,7 +5,7 @@ This package provides a **Building Block (BB)** NEW_NAME using the **HPC/Exascal
 
 ## Table of Contents
 
-- [Building Block NEW_NAME](#building-block-NEW_NAME)
+- [Building Block NEW_NAME](#building-block-new_name)
   - [Table of Contents](#table-of-contents)
   - [User instructions](#user-instructions)
     - [Requirements](#requirements)

@@ -33,7 +33,7 @@ There are two ways to install this package (from Pypi and manually):
 
 - From Pypi:
 
-  This package is **NOT YET** publicly available in Pypi:
+  This package is publicly available in Pypi:
 
   ```shell
   pip install permedcoe
@@ -227,12 +227,13 @@ There are two ways to uninstall this package, that depends on the way that it wa
 
 ### Building block
 
-If you are willing to implement your Building Block (BB), check:
+If you are willing to implement your Building Block (BB), check the following repositories,
+where you will find documentation, tutorials, and BB/application samples:
 
 - [Documentation](https://permedcoe.readthedocs.io/en/latest/)
-- [Tutorial](https://permedcoe.readthedocs.io/en/latest/04_tutorial/tutorial.html)
+- [Tutorial](https://permedcoe.readthedocs.io/en/latest/04_creating/04_tutorial/tutorial.html)
 - [basic_application](https://github.com/PerMedCoE/basic_application)
-- [Lysozyme_in_water](https://github.com/PerMedCoE/Lysozyme_in_water) repositories, where you will find BB and application samples.
+- [Lysozyme_in_water](https://github.com/PerMedCoE/Lysozyme_in_water)
 
 ## License
 
