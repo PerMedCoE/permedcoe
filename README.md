@@ -53,9 +53,6 @@ There are two ways to install this package (from Pypi and manually):
   ./install.sh
   ```
 
-  This script creates a file `installation_files.txt` to keep track of the installed files. It is used with the `uninstall.sh` script to clean up the system.
-
-
 ### Command line
 
   This package provides the `permedcoe` command:
