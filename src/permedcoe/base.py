@@ -25,16 +25,25 @@ def set_debug(level=False):
     __init_logging__(level)
 
 
-def invoker(function) -> None:
+def invoker(function, arguments_info=None) -> None:
     """ Parse the input parameters (from sys.argv) and then invoke the
     given BB function.
 
     Args:
         function (function): Building block function to invoke.
+        arguments_info (function): Building block arguments information.
     Returns:
         None
     """
-    arguments = __bb_parser__()
+    if arguments_info:
+        # Grab the BB arguments info to tune the argument parser
+        bb_arguments = arguments_info()
+    else:
+        # If set to none, use old-school inputs and outputs parameters
+        bb_arguments = None
+    arguments = __bb_parser__(bb_arguments)
+    if arguments.debug:
+        print("Building Block arguments:\n%s" % str(bb_arguments))
     # Set execution related conditions
     __cmd_flags__.DEBUG = arguments.debug
     __cmd_flags__.DISABLE_CONTAINER = arguments.disable_container
