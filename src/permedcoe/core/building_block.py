@@ -112,7 +112,7 @@ class PerMedBB(object):
                     if isinstance(elem_scc, list):
                         command = command + " " + " ".join(elem_scc)
                     else:
-                        command = command + " " + elem_scc
+                        command = command + " " + str(elem_scc)
             else:
                 command = command + " " + scc[c]
         logging.info("Launching the command: %s" % command)

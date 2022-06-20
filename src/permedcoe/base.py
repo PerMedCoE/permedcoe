@@ -38,9 +38,11 @@ def invoker(function, arguments_info=None) -> None:
     if arguments_info:
         # Grab the BB arguments info to tune the argument parser
         bb_arguments = arguments_info()
+        old_school_args = False
     else:
         # If set to none, use old-school inputs and outputs parameters
         bb_arguments = None
+        old_school_args = True
     arguments = __bb_parser__(bb_arguments)
     if arguments.debug:
         print("Building Block arguments:\n%s" % str(bb_arguments))
@@ -48,10 +50,14 @@ def invoker(function, arguments_info=None) -> None:
     __cmd_flags__.DEBUG = arguments.debug
     __cmd_flags__.DISABLE_CONTAINER = arguments.disable_container
     set_debug(arguments.debug)
-    # Grab input and output
-    in_path = arguments.input
-    out_path = arguments.output
     # Preprocess
     cfg = __preprocessing__(arguments)
-    # Building block invocation
-    function(in_path, out_path, cfg)
+    if old_school_args:
+        # Grab input and output
+        in_path = arguments.input
+        out_path = arguments.output
+        # Building block invocation
+        function(in_path, out_path, cfg)
+    else:
+        # Building block invocation
+        function(arguments, cfg)

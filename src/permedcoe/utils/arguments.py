@@ -145,12 +145,13 @@ def single_bb_sysarg_parser(bb_arguments):
     __bb_common_arguments__(parser)
     args = parser.parse_args()
 
-    # Check if the user does not include input and output
-    if not args.input or not args.output:
-        #  Show the usage
-        print(parser.print_usage())
-        print("Please, specify input and output")
-        sys.exit(1)
+    if bb_arguments is None:
+        # Check if the user does not include input and output
+        if not args.input or not args.output:
+            #  Show the usage
+            print(parser.print_usage())
+            print("Please, specify input and output")
+            sys.exit(1)
 
     return args
 
