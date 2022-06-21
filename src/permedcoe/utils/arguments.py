@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 
@@ -145,6 +146,9 @@ def single_bb_sysarg_parser(bb_arguments):
     __bb_common_arguments__(parser)
     args = parser.parse_args()
 
+    # Check if input file and directory arguments exist
+    __bb_arguments_checks__(args, bb_arguments)
+
     if bb_arguments is None:
         # Check if the user does not include input and output
         if not args.input or not args.output:
@@ -154,6 +158,34 @@ def single_bb_sysarg_parser(bb_arguments):
             sys.exit(1)
 
     return args
+
+
+def __bb_arguments_checks__(args, bb_arguments):
+    """ Check if input file and directory arguments exist.
+
+    Args:
+        args (argparsed): Parsed arguments.
+        bb_arguments (dict): BB arguments information.
+    """
+    mode = args.mode
+    arguments = bb_arguments.get_arguments()[mode]
+    print(arguments)
+    input_arguments = arguments.get_inputs()
+    issues = []
+    for k, v in input_arguments.items():
+        check = v.get_check()
+        to_check = vars(args)[k]
+        if check == "file":
+            if not os.path.isfile(to_check):
+                issues.append("ERROR: Argument %s for file %s does not exist." % (k, to_check))
+        if check == "folder":
+            if not os.path.isdir(to_check):
+                issues.append("ERROR: Argument %s for directory %s does not exist." % (k, to_check))
+    output_arguments = arguments.get_outputs()
+    if issues:
+        for message in issues:
+            print(message)
+        raise Exception("ERROR: Wrong or missing argument/s.")
 
 
 def __bb_specific_arguments__(parser, bb_arguments):
@@ -170,12 +202,14 @@ def __bb_specific_arguments__(parser, bb_arguments):
         for param_name, param in inputs.items():
             parser_inner = parser.add_argument("--%s" % param_name,
                                                help="(INPUT) %s" % param.get_description(),
-                                               type=param.get_type())
+                                               type=param.get_type(),
+                                               required=True)
         outputs = arguments["default"].get_outputs()
         for param_name, param in outputs.items():
             parser_inner = parser.add_argument("--%s" % param_name,
                                                help="(OUTPUT) %s" % param.get_description(),
-                                               type=param.get_type())
+                                               type=param.get_type(),
+                                               required=True)
     else:
         # More than one mode
         subparser = parser.add_subparsers(dest="mode")
@@ -185,12 +219,14 @@ def __bb_specific_arguments__(parser, bb_arguments):
             for param_name, param in inputs.items():
                 parser_inner_mode = parser_mode.add_argument("--%s" % param_name,
                                                              help="(INPUT) %s" % param.get_description(),
-                                                             type=param.get_type())
+                                                             type=param.get_type(),
+                                                             required=True)
             outputs = v.get_outputs()
             for param_name, param in outputs.items():
                 parser_inner_mode = parser_mode.add_argument("--%s" % param_name,
                                                              help="(OUTPUT) %s" % param.get_description(),
-                                                             type=param.get_type())
+                                                             type=param.get_type(),
+                                                             required=True)
 
 
 def __bb_execute_arguments__(parser):
