@@ -5,6 +5,6 @@ echo "Installing..."
 path=$1
 mkdir -p ${path}
 
-python3 -m pip install . --target=${path} $2 $3
+python3 setup.py install --prefix ${path}
 
 echo "----- Installation finished -----"
