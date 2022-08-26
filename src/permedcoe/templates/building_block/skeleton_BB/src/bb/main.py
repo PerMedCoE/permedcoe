@@ -14,6 +14,7 @@ from permedcoe import DIRECTORY_IN     # To define directory type and direction
 from permedcoe import DIRECTORY_OUT    # To define directory type and direction
 from permedcoe import DIRECTORY_INOUT  # To define directory type and direction
 # Other permedcoe available functionalities
+from permedcoe import Arguments        # Arguments definition
 from permedcoe import get_environment  # Get variables from invocation (tmpdir, processes, gpus, memory)
 
 
@@ -76,3 +77,23 @@ def invoke(input, output, config):
     output_file = output[0]
     building_block_task(input_file=input_file,
                         output_file=output_file)
+
+
+def arguments_info():
+    """Arguments definition.
+
+    Builds the arguments definition.
+
+    Returns:
+        Supported arguments.
+    """
+    # TODO: Define the arguments required by the Building Block
+    arguments = Arguments()
+    arguments.add_input(name="input",
+                        type=str,
+                        description="Input file",
+                        check="file")
+    arguments.add_output(name="output",
+                         type=str,
+                         description="Output file")
+    return arguments

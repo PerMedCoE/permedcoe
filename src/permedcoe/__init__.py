@@ -41,3 +41,32 @@ except ImportError:
 from permedcoe.base import get_environment
 from permedcoe.base import set_debug
 from permedcoe.base import invoker
+
+# Arguments definition
+from permedcoe.utils.user_arguments import ArgumentDirections as __ArgumentDirections__
+from permedcoe.utils.user_arguments import Argument as __Argument__
+class Arguments:
+
+    def __init__(self):
+        self.arguments = {}
+        self.arguments["default"] = __ArgumentDirections__()
+
+    def add_input(self, name, type, description, check=None, mode="default"):
+        if not mode in self.arguments:
+            self.arguments[mode] = __ArgumentDirections__()
+        self.arguments[mode].add_input(name, __Argument__(type, description, check))
+
+    def add_output(self, name, type, description, mode="default"):
+        if not mode in self.arguments:
+            self.arguments[mode] = __ArgumentDirections__()
+        self.arguments[mode].add_output(name, __Argument__(type, description))
+
+    def get_arguments(self) -> dict:
+        return self.arguments
+
+    def __str__(self) -> str:
+        args_str = ""
+        for k, v in self.arguments.items():
+            args_str += "Mode: %s\n" % k
+            args_str += "Arguments: %s\n" % v
+        return args_str

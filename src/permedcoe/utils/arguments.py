@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 
@@ -127,32 +128,109 @@ def parse_sys_argv():
     return arguments
 
 
-def single_bb_sysarg_parser() -> (str, str, dict):
+def single_bb_sysarg_parser(bb_arguments):
     """ Parses the sys.argv.
 
     Args:
-        None
+        bb_arguments: Building block arguments.
     Returns:
-        Input file/directory path
-        Output file/directory path
-        Configuration dictionary
+        Parsed arguments
     """
     parser = argparse.ArgumentParser()
-    __bb_execute_arguments__(parser)
+    if bb_arguments:
+        # Building block detailed parser
+        __bb_specific_arguments__(parser, bb_arguments)
+    else:
+        # Old-school argument parser
+        __bb_execute_arguments__(parser)
+    __bb_common_arguments__(parser)
     args = parser.parse_args()
 
-    # Check if the user does not include input and output
-    if not args.input or not args.output:
-        #  Show the usage
-        print(parser.print_usage())
-        print("Please, specify input and output")
-        sys.exit(1)
+    # Check if input file and directory arguments exist
+    __bb_arguments_checks__(args, bb_arguments)
+
+    if bb_arguments is None:
+        # Check if the user does not include input and output
+        if not args.input or not args.output:
+            #  Show the usage
+            print(parser.print_usage())
+            print("Please, specify input and output")
+            sys.exit(1)
 
     return args
 
 
+def __bb_arguments_checks__(args, bb_arguments):
+    """ Check if input file and directory arguments exist.
+
+    Args:
+        args (argparsed): Parsed arguments.
+        bb_arguments (dict): BB arguments information.
+    """
+    mode = args.mode
+    arguments = bb_arguments.get_arguments()[mode]
+    print(arguments)
+    input_arguments = arguments.get_inputs()
+    issues = []
+    for k, v in input_arguments.items():
+        check = v.get_check()
+        to_check = vars(args)[k]
+        if check == "file":
+            if not os.path.isfile(to_check):
+                issues.append("ERROR: Argument %s for file %s does not exist." % (k, to_check))
+        if check == "folder":
+            if not os.path.isdir(to_check):
+                issues.append("ERROR: Argument %s for directory %s does not exist." % (k, to_check))
+    output_arguments = arguments.get_outputs()
+    if issues:
+        for message in issues:
+            print(message)
+        raise Exception("ERROR: Wrong or missing argument/s.")
+
+
+def __bb_specific_arguments__(parser, bb_arguments):
+    """ BB specific arguments for Building block execute.
+
+    Args:
+        parser (parser): Parser to append arguments.
+        bb_arguments (dict): BB arguments information.
+    """
+    arguments = bb_arguments.get_arguments()
+    if len(arguments) == 1:
+        # Only default mode
+        inputs = arguments["default"].get_inputs()
+        for param_name, param in inputs.items():
+            parser_inner = parser.add_argument("--%s" % param_name,
+                                               help="(INPUT) %s" % param.get_description(),
+                                               type=param.get_type(),
+                                               required=True)
+        outputs = arguments["default"].get_outputs()
+        for param_name, param in outputs.items():
+            parser_inner = parser.add_argument("--%s" % param_name,
+                                               help="(OUTPUT) %s" % param.get_description(),
+                                               type=param.get_type(),
+                                               required=True)
+    else:
+        # More than one mode
+        subparser = parser.add_subparsers(dest="mode")
+        for k, v in arguments.items():
+            parser_mode = subparser.add_parser(k)
+            inputs = v.get_inputs()
+            for param_name, param in inputs.items():
+                parser_inner_mode = parser_mode.add_argument("--%s" % param_name,
+                                                             help="(INPUT) %s" % param.get_description(),
+                                                             type=param.get_type(),
+                                                             required=True)
+            outputs = v.get_outputs()
+            for param_name, param in outputs.items():
+                parser_inner_mode = parser_mode.add_argument("--%s" % param_name,
+                                                             help="(OUTPUT) %s" % param.get_description(),
+                                                             type=param.get_type(),
+                                                             required=True)
+
+
 def __bb_execute_arguments__(parser):
-    """ Add common arguments for Building block execute.
+    """ Add old-school arguments for Building block execute.
 
     Args:
         parser (parser): Parser to append arguments
@@ -165,9 +243,17 @@ def __bb_execute_arguments__(parser):
                         help="Output file/s or directory path/s",
                         nargs="+",
                         type=str)
+
+
+def __bb_common_arguments__(parser):
+    """ Add common arguments for Building block execute.
+
+    Args:
+        parser (parser): Parser to append arguments
+    """
     parser.add_argument("-c", "--config",
-                        help="Configuration file path",
-                        type=str)
+                    help="(CONFIG) Configuration file path",
+                    type=str)
     parser.add_argument("-d", "--debug",
                         help="Enable Building Block debug mode. Overrides log_level",        # noqa: E501
                         action="store_true")
