@@ -146,10 +146,10 @@ def single_bb_sysarg_parser(bb_arguments):
     __bb_common_arguments__(parser)
     args = parser.parse_args()
 
-    # Check if input file and directory arguments exist
-    __bb_arguments_checks__(args, bb_arguments)
-
-    if bb_arguments is None:
+    if bb_arguments:
+        # Check if input file and directory arguments exist
+        __bb_arguments_checks__(args, bb_arguments)
+    else:
         # Check if the user does not include input and output
         if not args.input or not args.output:
             #  Show the usage
