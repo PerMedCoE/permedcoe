@@ -47,3 +47,37 @@ class ArgumentDirections:
             args_str += "- Output: %s\n" % k
             args_str += "%s" % v
         return args_str
+
+
+class Arguments:
+
+    def __init__(self):
+        self.arguments = {}
+        self.arguments["default"] = ArgumentDirections()
+        self.description = "Undefined description."
+
+    def set_description(self, description):
+        self.description = description
+
+    def add_input(self, name, type, description, check=None, mode="default"):
+        if not mode in self.arguments:
+            self.arguments[mode] = ArgumentDirections()
+        self.arguments[mode].add_input(name, Argument(type, description, check))
+
+    def add_output(self, name, type, description, mode="default"):
+        if not mode in self.arguments:
+            self.arguments[mode] = ArgumentDirections()
+        self.arguments[mode].add_output(name, Argument(type, description))
+
+    def get_arguments(self) -> dict:
+        return self.arguments
+
+    def get_description(self):
+        return self.description
+
+    def __str__(self) -> str:
+        args_str = ""
+        for k, v in self.arguments.items():
+            args_str += "Mode: %s\n" % k
+            args_str += "Arguments: %s\n" % v
+        return args_str

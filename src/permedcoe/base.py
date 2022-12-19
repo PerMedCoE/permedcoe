@@ -1,4 +1,5 @@
 from permedcoe.utils.arguments import single_bb_sysarg_parser as __bb_parser__
+from permedcoe.utils.arguments import load_parameters_from_json as __bb_param_loader__
 from permedcoe.utils.preproc import preprocessing as __preprocessing__
 from permedcoe.utils.log import init_logging as __init_logging__
 from permedcoe.utils.environ import get_environment as __get_environment__
@@ -37,7 +38,12 @@ def invoker(function, arguments_info=None) -> None:
     """
     if arguments_info:
         # Grab the BB arguments info to tune the argument parser
-        bb_arguments = arguments_info()
+        if isinstance(arguments_info, str):
+            # Use the parameters defined in the given file
+            bb_arguments = __bb_param_loader__(arguments_info)
+        else:
+            # Use the given arguments
+            bb_arguments = arguments_info()
         old_school_args = False
     else:
         # If set to none, use old-school inputs and outputs parameters
