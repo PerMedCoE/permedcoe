@@ -1,0 +1,21 @@
+{
+    "short_description": "NEW_NAME Building Block short description.",
+    "long_description": "NEW_NAME Building Block short description. Give more details about the Building Block.",
+    "use_description": "long",
+    "parameters": {
+        "default": [
+            {
+                "type": "input",
+                "name": "model",
+                "format": "file",
+                "description": "Input file (model)"
+            },
+            {
+                "type": "output",
+                "name": "result",
+                "format": "file",
+                "description": "Result file"
+            }
+        ]
+    }
+}
