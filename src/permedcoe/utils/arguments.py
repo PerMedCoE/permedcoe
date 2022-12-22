@@ -152,7 +152,7 @@ def single_bb_sysarg_parser(bb_arguments):
     __bb_common_arguments__(parser)
     args = parser.parse_args()
 
-    if args.mode == None:
+    if hasattr(args, "mode") and args.mode == None:
         #  Show the usage
         print(parser.print_help())
         print("Please, specify the appropriate parameters")
@@ -178,7 +178,10 @@ def __bb_arguments_checks__(args, bb_arguments):
         args (argparsed): Parsed arguments.
         bb_arguments (dict): BB arguments information.
     """
-    mode = args.mode
+    if hasattr(args, "mode"):
+        mode = args.mode
+    else:
+        mode = "default"
     arguments = bb_arguments.get_arguments()[mode]
     print(arguments)
     input_arguments = arguments.get_inputs()
