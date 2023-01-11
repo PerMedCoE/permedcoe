@@ -1,6 +1,9 @@
-import os
-import sys
 import argparse
+import os
+import json
+import sys
+
+from permedcoe.utils.user_arguments import Arguments
 
 
 def parse_sys_argv():
@@ -136,24 +139,32 @@ def single_bb_sysarg_parser(bb_arguments):
     Returns:
         Parsed arguments
     """
-    parser = argparse.ArgumentParser()
     if bb_arguments:
         # Building block detailed parser
+        parser = argparse.ArgumentParser(
+            description=bb_arguments.get_description()
+        )
         __bb_specific_arguments__(parser, bb_arguments)
     else:
         # Old-school argument parser
+        parser = argparse.ArgumentParser()
         __bb_execute_arguments__(parser)
     __bb_common_arguments__(parser)
     args = parser.parse_args()
 
-    if bb_arguments:
+    if hasattr(args, "mode") and args.mode == None:
+        #  Show the usage
+        print(parser.print_help())
+        print("Please, specify the appropriate parameters")
+        sys.exit(1)
+    elif bb_arguments:
         # Check if input file and directory arguments exist
         __bb_arguments_checks__(args, bb_arguments)
     else:
         # Check if the user does not include input and output
         if not args.input or not args.output:
             #  Show the usage
-            print(parser.print_usage())
+            print(parser.print_help())
             print("Please, specify input and output")
             sys.exit(1)
 
@@ -167,7 +178,10 @@ def __bb_arguments_checks__(args, bb_arguments):
         args (argparsed): Parsed arguments.
         bb_arguments (dict): BB arguments information.
     """
-    mode = args.mode
+    if hasattr(args, "mode"):
+        mode = args.mode
+    else:
+        mode = "default"
     arguments = bb_arguments.get_arguments()[mode]
     print(arguments)
     input_arguments = arguments.get_inputs()
@@ -200,14 +214,16 @@ def __bb_specific_arguments__(parser, bb_arguments):
         # Only default mode
         inputs = arguments["default"].get_inputs()
         for param_name, param in inputs.items():
+            help_msg = __get_help_message__("INPUT", param)
             parser_inner = parser.add_argument("--%s" % param_name,
-                                               help="(INPUT) %s" % param.get_description(),
+                                               help=help_msg,
                                                type=param.get_type(),
                                                required=True)
         outputs = arguments["default"].get_outputs()
         for param_name, param in outputs.items():
+            help_msg = __get_help_message__("OUTPUT", param)
             parser_inner = parser.add_argument("--%s" % param_name,
-                                               help="(OUTPUT) %s" % param.get_description(),
+                                               help=help_msg,
                                                type=param.get_type(),
                                                required=True)
     else:
@@ -217,16 +233,40 @@ def __bb_specific_arguments__(parser, bb_arguments):
             parser_mode = subparser.add_parser(k)
             inputs = v.get_inputs()
             for param_name, param in inputs.items():
+                help_msg = __get_help_message__("INPUT", param)
                 parser_inner_mode = parser_mode.add_argument("--%s" % param_name,
-                                                             help="(INPUT) %s" % param.get_description(),
+                                                             help=help_msg,
                                                              type=param.get_type(),
                                                              required=True)
             outputs = v.get_outputs()
             for param_name, param in outputs.items():
+                help_msg = __get_help_message__("OUTPUT", param)
                 parser_inner_mode = parser_mode.add_argument("--%s" % param_name,
-                                                             help="(OUTPUT) %s" % param.get_description(),
+                                                             help=help_msg,
                                                              type=param.get_type(),
                                                              required=True)
+
+
+def __get_help_message__(param_direction, param):
+    """ Generate help message.
+
+    Args:
+        param_type (str): If the parameter is INPUT or OUTPUT.
+        param (Argument): Parameter argument object.
+    Returns:
+        The message associated for the given parameter.
+    """
+    if param.get_check() in ["file", "folder"]:
+        param_type = "%s (%s)" % (param.get_type().__name__, param.get_check())
+    else:
+        param_type = param.get_type().__name__
+    help_msg = "(%s - %s) %s" % (
+        param_direction,
+        param_type,
+        param.get_description()
+    )
+    return help_msg
+
 
 
 def __bb_execute_arguments__(parser):
@@ -280,3 +320,82 @@ def __bb_common_arguments__(parser):
     parser.add_argument("--disable_container",
                         help=argparse.SUPPRESS,
                         action="store_true")
+
+
+def load_parameters_from_json(parameters_file):
+    """ Load the parameters defined in the given json file.
+
+    Args:
+        parameters_file (str): File containing the parameters (json format).
+    Returns:
+        Loaded arguments.
+    """
+    with open(parameters_file, "r") as params_fd:
+        raw_params = json.load(params_fd)
+    # Now build the args object from raw_params
+    short_description = raw_params["short_description"]
+    long_description = raw_params["long_description"]
+    use_description = raw_params["use_description"]
+    parameters = raw_params["parameters"]
+
+    arguments = Arguments()
+    if use_description == "short":
+        arguments.set_description(short_description)
+    else:
+        arguments.set_description(long_description)
+    # just_one_mode avoids to use default as keyword
+    just_one_mode = len(parameters) == 1
+    for mode, params in parameters.items():
+        for param in params:
+            p_type = param["type"]
+            p_name = param["name"]
+            p_format, p_check = __convert_format__(param["format"])
+            p_description = param["description"]
+
+            if p_type == "input":
+                if just_one_mode:
+                    arguments.add_input(name=p_name,
+                                        type=p_format,
+                                        description=p_description,
+                                        check=p_check)
+                else:
+                    arguments.add_input(name=p_name,
+                                        type=p_format,
+                                        description=p_description,
+                                        check=p_check,
+                                        mode=mode)
+            elif p_type == "output":
+                if just_one_mode:
+                    arguments.add_output(name=p_name,
+                                        type=p_format,
+                                        description=p_description)
+                else:
+                        arguments.add_output(name=p_name,
+                                            type=p_format,
+                                            description=p_description,
+                                            mode=mode)
+            else:
+                raise Exception("Unexpected parameter type %s (supported input | output)" % str(p_type))
+    return arguments
+
+
+def __convert_format__(format):
+    """Convert format to the actual type.
+
+    Args:
+        format (str): Input format.
+    Returns:
+        The supported format type and format to be checked.
+    """
+    if format == "str":
+        return str, str
+    elif format == "int":
+        return int, int
+    elif format == "float":
+        return float, float
+    elif format == "bool":
+        return bool, bool
+    elif format in ["file", "folder"]:
+        return str, format
+    else:
+        raise Exception("Unsupported parameter type")

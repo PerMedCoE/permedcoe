@@ -17,9 +17,10 @@ from permedcoe import DIRECTORY_INOUT  # To define directory type and direction
 from permedcoe import Arguments        # Arguments definition
 from permedcoe import get_environment  # Get variables from invocation (tmpdir, processes, gpus, memory)
 
-
-# Single and global container definition for this building block
-SAMPLE_CONTAINER = "/PATH/TO/container/sample.sif"  # TODO: Define your container
+# Import single container and assets definitions
+from NEW_NAME.definitions import NEW_NAME_ASSETS_PATH  # binary could be in this folder
+from NEW_NAME.definitions import NEW_NAME_CONTAINER
+from NEW_NAME.definitions import COMPUTING_UNITS
 
 
 def function_name(*args, **kwargs):
@@ -36,8 +37,8 @@ def function_name(*args, **kwargs):
     # TODO: (optional) Pure python code calling to PyCOMPSs tasks (that can be defined in this file or in another).
 
 
-@container(engine="SINGULARITY", image=SAMPLE_CONTAINER)
-@binary(binary="cp")                                        # TODO: Define the binary to be used.
+@container(engine="SINGULARITY", image=NEW_NAME_CONTAINER)
+@binary(binary="cp")                                        # TODO: Define the binary to be used (can be within NEW_NAME_ASSETS_PATH).
 @task(input_file=FILE_IN, output_file=FILE_OUT)             # TODO: Define the inputs and output parameters.
 def building_block_task(input_file=None,                    # TODO: Define a representative task name
                         output_file=None,
@@ -66,6 +67,8 @@ def invoke(input, output, config):
     Returns:
         None
     """
+    # TODO: Define the arguments required by the Building Block in definition.json file
+
     # TODO: Declare how to run the binary specification (convert config into building_block_task call)
     # Sample config parameter get:
     #     operation = config["operation"]
@@ -77,23 +80,3 @@ def invoke(input, output, config):
     output_file = output[0]
     building_block_task(input_file=input_file,
                         output_file=output_file)
-
-
-def arguments_info():
-    """Arguments definition.
-
-    Builds the arguments definition.
-
-    Returns:
-        Supported arguments.
-    """
-    # TODO: Define the arguments required by the Building Block
-    arguments = Arguments()
-    arguments.add_input(name="input",
-                        type=str,
-                        description="Input file",
-                        check="file")
-    arguments.add_output(name="output",
-                         type=str,
-                         description="Output file")
-    return arguments

@@ -9,7 +9,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="permedcoe",
-    version="0.0.5",
+    version="0.0.6",
     description="This package provides the common interface for the Building Blocks.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -53,7 +53,8 @@ setup(
                       "templates/building_block/skeleton_BB/*",
                       "templates/building_block/skeleton_BB/container/*",
                       "templates/building_block/skeleton_BB/src/*",
-                      "templates/building_block/skeleton_BB/src/bb/*"],
+                      "templates/building_block/skeleton_BB/src/bb/*",
+                      "templates/building_block/skeleton_BB/src/bb/assets/*"],
     },
     entry_points={
         "console_scripts": [
