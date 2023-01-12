@@ -4,11 +4,12 @@ import logging
 import pathlib
 import shutil
 import subprocess
+import sys
 import urllib.request
 from urllib.error import HTTPError
 import zipfile
 
-from permedcoe.utils.preproc import preprocessing
+from permedcoe.base import invoker
 from permedcoe.utils.log import init_logging
 from permedcoe.utils.executor import command_runner
 from permedcoe.utils.artifact import adapt_name
@@ -26,17 +27,36 @@ def execute_building_block(arguments):
     Args:
         arguments (Namespace): System arguments.
     """
-    # Grab input and output
-    in_path = arguments.input
-    out_path = arguments.output
-    # Preprocess
-    cfg = preprocessing(arguments)
     # Building block invocation
     building_block = arguments.name
     logging.info("Executing Building Block: %s" % str(building_block))
     bb_module = importlib.import_module(building_block)
-    invoke = getattr(bb_module, "invoke")
-    invoke(in_path, out_path, cfg)
+    invoke_function = getattr(bb_module, "invoke")
+    # Check if json with parameters is defined
+    params_json_file = os.path.join(bb_module.__path__[0], "definition.json")
+    if os.path.isfile(params_json_file):
+        __set_bb_sysargv__(building_block)
+        invoker(invoke_function, params_json_file)
+    else:
+        try:
+            __set_bb_sysargv__(building_block)
+            arguments_function = getattr(bb_module, "arguments_info")
+            invoker(invoke_function, arguments_function)
+        except AttributeError:
+            # old school BB
+            invoker(invoke_function)
+
+
+def __set_bb_sysargv__(name):
+    """Removes the unnecessary parameters from sys.argv so that
+    the building block invocation does not fail.
+
+    Args:
+        name (str): Building block name.
+    """
+    reset_args_index = sys.argv.index(name) + 1
+    new_args = [sys.argv[0]] + sys.argv[reset_args_index:]
+    sys.argv = new_args
 
 
 def execute_application(arguments):

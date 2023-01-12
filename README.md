@@ -99,36 +99,54 @@ There are two ways to install this package (from Pypi and manually):
 
     ```shell
     $ permedcoe execute building_block -h
-    usage: permedcoe execute building_block [-h] [-i INPUT [INPUT ...]] [-o OUTPUT [OUTPUT ...]]
-                                        [-c CONFIG] [-d] [-l {debug,info,warning,error,critical}]
-                                        [--tmpdir TMPDIR] [--processes PROCESSES] [--gpus GPUS]
-                                        [--memory MEMORY] [--mount_points MOUNT_POINTS]
+    usage: permedcoe execute building_block [-h] name [parameters ...]
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      -i INPUT [INPUT ...], --input INPUT [INPUT ...]
-                            Input file/s or directory path/s (default: None)
-      -o OUTPUT [OUTPUT ...], --output OUTPUT [OUTPUT ...]
-                            Output file/s or directory path/s (default: None)
-      -c CONFIG, --config CONFIG
-                            Configuration file path (default: None)
-      -d, --debug           Enable Building Block debug mode. Overrides log_level (default: False)
-      -l {debug,info,warning,error,critical}, --log_level {debug,info,warning,error,critical}
-                            Set logging level (default: None)
-      --tmpdir TMPDIR       Temp directory to be mounted in the container (default: None)
-      --processes PROCESSES
-                            Number of processes for MPI executions (default: None)
-      --gpus GPUS           Requirements for GPU jobs (default: None)
-      --memory MEMORY       Memory requirement (default: None)
-      --mount_points MOUNT_POINTS
-                            Comma separated alias:folder to be mounted in the container (default: None)
+    positional arguments:
+      name        Building Block to execute
+      parameters  Building Block parameters (default: None)
+
+    options:
+      -h, --help  show this help message and exit
+    ```
+
+    Specifying the particular building block to execute (must be installed), provides more detailed information:
+
+    ```shell
+    $ permedcoe execute building_block MaBoSS_BB -h
+    usage: permedcoe [-h] [-c CONFIG] [-d] [-l {debug,info,warning,error,critical}] [--tmpdir TMPDIR]
+                 [--processes PROCESSES] [--gpus GPUS] [--memory MEMORY] [--mount_points MOUNT_POINTS]
+                 {default,sensitivity} ...
+
+      This building block uses MaBoSS to screen all the possible knockouts of a given Boolean model. It
+      produces a candidate gene list formatted as a text file (single gene per row). More information on
+      MaBoSS can be found in [Stoll G. et al. (2017)](https://academic.oup.com/bioinformatics/article-
+      lookup/doi/10.1093/bioinformatics/btx123) and in the [MaBoSS GitHub
+      repository](https://github.com/maboss-bkmc/MaBoSS-env-2.0).
+
+      positional arguments:
+        {default,sensitivity}
+
+      options:
+        -h, --help            show this help message and exit
+        -c CONFIG, --config CONFIG
+                              (CONFIG) Configuration file path
+        -d, --debug           Enable Building Block debug mode. Overrides log_level
+        -l {debug,info,warning,error,critical}, --log_level {debug,info,warning,error,critical}
+                              Set logging level
+        --tmpdir TMPDIR       Temp directory to be mounted in the container
+        --processes PROCESSES
+                              Number of processes for MPI executions
+        --gpus GPUS           Requirements for GPU jobs
+        --memory MEMORY       Memory requirement
+        --mount_points MOUNT_POINTS
+                              Comma separated alias:folder to be mounted in the container
 
     ```
 
   - In particular for building blocks:
 
     ```shell
-    permedcoe execute application -h None)
+    $ permedcoe execute application -h
     usage: permedcoe execute application [-h] [-w {none,pycompss,nextflow,snakemake}]
                                         [-f FLAGS [FLAGS ...]]
                                         name [parameters [parameters ...]]
@@ -181,7 +199,6 @@ There are two ways to install this package (from Pypi and manually):
 
   options:
     -h, --help            show this help message and exit
-
   ```
 
 For the deployment in supercomputers, please contact PerMedCoE: <https://permedcoe.eu/contact/>.

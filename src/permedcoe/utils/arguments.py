@@ -57,7 +57,9 @@ def parse_sys_argv():
     parser_execute_bb.add_argument(
         dest="name", type=str, help="Building Block to execute"
     )
-    __bb_execute_arguments__(parser_execute_bb)
+    parser_execute_bb.add_argument(
+        dest="parameters", type=str, nargs=argparse.REMAINDER, help="Building Block parameters"
+    )
     parser_execute_app = subparsers_execute.add_parser(
         "application",
         aliases=["app"],
@@ -68,7 +70,7 @@ def parse_sys_argv():
         dest="name", type=str, help="Application to execute"
     )
     parser_execute_app.add_argument(
-        dest="parameters", type=str, nargs="*", help="Application parameters"
+        dest="parameters", type=str, nargs=argparse.REMAINDER, help="Application parameters"
     )
     parser_execute_app.add_argument(
         "-w",
