@@ -19,6 +19,8 @@ try:
     from pycompss.api.parameter import Type
     from pycompss.api.parameter import StdIOStream
     from pycompss.api.parameter import STDIN
+    from pycompss.api.parameter import STDOUT
+    from pycompss.api.parameter import STDERR
     # raise ImportError  # NOSONAR
 except ImportError:
     # Without PyCOMPSs it will take the core
@@ -36,6 +38,8 @@ except ImportError:
     from permedcoe.core.decorators import Type
     from permedcoe.core.decorators import StdIOStream
     from permedcoe.core.decorators import STDIN
+    from permedcoe.core.decorators import STDOUT
+    from permedcoe.core.decorators import STDERR
 
 # Public functions
 from permedcoe.base import get_environment

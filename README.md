@@ -13,6 +13,9 @@ This package provides the base for all **Building Blocks (BBs)** developed in th
     - [Requirements](#requirements)
     - [Installation](#installation)
     - [Command line](#command-line)
+      - [Option execute:](#option-execute)
+      - [Option template:](#option-template)
+      - [Option deploy:](#option-deploy)
     - [Public API](#public-api)
     - [Uninstall](#uninstall)
   - [Developer instructions](#developer-instructions)
@@ -59,20 +62,22 @@ There are two ways to install this package (from Pypi and manually):
 
   ```shell
   $ permedcoe -h
-  usage: permedcoe [-h] [-d] [-l {debug,info,warning,error,critical}] {execute,x,template,t} ...
+  usage: permedcoe [-h] [-d] [-l {debug,info,warning,error,critical}]
+                 {execute,x,template,t,deploy,d} ...
 
   positional arguments:
-    {execute,x,template,t}
+    {execute,x,template,t,deploy,d}
       execute (x)         Execute a building block.
       template (t)        Shows an example of the requested template.
+      deploy (d)          Download and deploy the requested workflow or building block.
 
-  optional arguments:
+  options:
     -h, --help            show this help message and exit
     -d, --debug           Enable debug mode. Overrides log_level (default: False)
     -l {debug,info,warning,error,critical}, --log_level {debug,info,warning,error,critical}
                           Set logging level. (default: error)
-
   ```
+#### Option execute:
 
 - It enables to execute single building blocks or applications:
 
@@ -140,7 +145,9 @@ There are two ways to install this package (from Pypi and manually):
                             Workflow manager flags (default: None)
     ```
 
-- And it is also available to create a skeleton of a building block or an application:
+#### Option template:
+
+- It available to create a skeleton of a building block or an application:
 
   ```shell
   $ permedcoe template -h
@@ -157,6 +164,27 @@ There are two ways to install this package (from Pypi and manually):
     -t {all,pycompss,nextflow,snakemake}, --type {all,pycompss,nextflow,snakemake}
                           Application type. (default: all)
   ```
+
+#### Option deploy:
+
+- It available to deploy an existing Building Block or Workflow in a **local machine (e.g. laptop)**:
+
+  ```shell
+  $ permedcoe deploy -h
+  usage: permedcoe deploy [-h] {building_block,bb,workflow,wf} ...
+
+  positional arguments:
+    {building_block,bb,workflow,wf}
+      building_block (bb)
+                          A specific building block.
+      workflow (wf)       A specific workflow.
+
+  options:
+    -h, --help            show this help message and exit
+
+  ```
+
+For the deployment in supercomputers, please contact PerMedCoE: <https://permedcoe.eu/contact/>.
 
 ### Public API
 
@@ -175,19 +203,31 @@ The `permedcoe` package provides a set of public decorators, parameter type defi
 - Parameter type definition:
 
     ```python
+    from permedcoe import Type
     from permedcoe import FILE_IN
     from permedcoe import FILE_OUT
     from permedcoe import FILE_INOUT
     from permedcoe import DIRECTORY_IN
     from permedcoe import DIRECTORY_OUT
     from permedcoe import DIRECTORY_INOUT
+    from permedcoe import StdIOStream
+    from permedcoe import STDIN
+    from permedcoe import STDOUT
+    from permedcoe import STDERR
     ```
 
 - Functions:
 
     ```python
-    from permedcoe import invoke
     from permedcoe import get_environment
+    from permedcoe import set_debug
+    from permedcoe import invoker
+    ```
+
+- Classes:
+
+    ```python
+    from permedcoe import Arguments
     ```
 
 ### Uninstall
@@ -195,6 +235,7 @@ The `permedcoe` package provides a set of public decorators, parameter type defi
 Uninstall can be done as usual `pip` packages:
 
 There are two ways to uninstall this package, that depends on the way that it was installed (from Pypi or using `install.sh`):
+
 
 - From Pypi:
 

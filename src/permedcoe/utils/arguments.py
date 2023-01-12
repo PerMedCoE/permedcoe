@@ -16,7 +16,7 @@ def parse_sys_argv():
     """
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )  # noqa: E501
+    )
     parser.add_argument(
         "-d",
         "--debug",
@@ -27,7 +27,7 @@ def parse_sys_argv():
         "-l",
         "--log_level",
         help="Set logging level.",
-        choices=["debug", "info", "warning", "error", "critical"],  # noqa: E501
+        choices=["debug", "info", "warning", "error", "critical"],
         default="error",
         type=str,
     )
@@ -35,7 +35,7 @@ def parse_sys_argv():
     # Parent parser - includes all arguments which are common to all actions
     parent_parser = argparse.ArgumentParser(
         add_help=False, formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )  # noqa: E501
+    )
     # Currently empty
 
     # Execute sub-parser
@@ -46,14 +46,14 @@ def parse_sys_argv():
         help="Execute a building block.",
         parents=[parent_parser],
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     subparsers_execute = parser_execute.add_subparsers(dest="execute")
     parser_execute_bb = subparsers_execute.add_parser(
         "building_block",
         aliases=["bb"],
-        help="Execute a building block.",  # noqa: E501
+        help="Execute a building block.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     parser_execute_bb.add_argument(
         dest="name", type=str, help="Building Block to execute"
     )
@@ -61,9 +61,9 @@ def parse_sys_argv():
     parser_execute_app = subparsers_execute.add_parser(
         "application",
         aliases=["app"],
-        help="Execute an application.",  # noqa: E501
+        help="Execute an application.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     parser_execute_app.add_argument(
         dest="name", type=str, help="Application to execute"
     )
@@ -74,7 +74,7 @@ def parse_sys_argv():
         "-w",
         "--workflow_manager",
         type=str,
-        choices=["none", "pycompss", "nextflow", "snakemake"],  # noqa: E501
+        choices=["none", "pycompss", "nextflow", "snakemake"],
         default="none",
         help="Workflow manager to use",
     )
@@ -87,7 +87,7 @@ def parse_sys_argv():
     #                                       aliases=['s'],
     #                                       help='Submit an application.',
     #                                       parents=[parent_parser],
-    #                                       formatter_class=argparse.ArgumentDefaultsHelpFormatter)    # noqa: E501
+    #                                       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # parser_submit.add_argument('-s', '--system',
     #                            dest='system',
     #                            type=str,
@@ -104,32 +104,32 @@ def parse_sys_argv():
     parser_template = subparsers.add_parser(
         "template",
         aliases=["t"],
-        help="Shows an example of the requested template.",  # noqa: E501
+        help="Shows an example of the requested template.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     subparser_template = parser_template.add_subparsers(dest="template")
     parser_template_bb = subparser_template.add_parser(
         "building_block",
         aliases=["bb"],
-        help="Create a building block template.",  # noqa: E501
+        help="Create a building block template.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     parser_template_bb.add_argument(
         dest="name", type=str, help="Building Block to create"
     )
     parser_template_app = subparser_template.add_parser(
         "application",
         aliases=["app"],
-        help="Create an application template.",  # noqa: E501
+        help="Create an application template.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     parser_template_app.add_argument(
         dest="name", type=str, help="Application to create"
     )
     parser_template_app.add_argument(
         "-t",
         "--type",
-        choices=["all", "pycompss", "nextflow", "snakemake"],  # noqa: E501
+        choices=["all", "pycompss", "nextflow", "snakemake"],
         default="all",
         type=str,
         help="Application type.",
@@ -139,25 +139,25 @@ def parse_sys_argv():
     parser_deploy = subparsers.add_parser(
         "deploy",
         aliases=["d"],
-        help="Download and deploy the requested workflow or building block.",  # noqa: E501
+        help="Download and deploy the requested workflow or building block.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     subparser_deploy = parser_deploy.add_subparsers(dest="deploy")
     parser_deploy_bb = subparser_deploy.add_parser(
         "building_block",
         aliases=["bb"],
-        help="A specific building block.",  # noqa: E501
+        help="A specific building block.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     parser_deploy_bb.add_argument(
         dest="name", type=str, help="Building Block to deploy."
     )
     parser_deploy_workflow = subparser_deploy.add_parser(
         "workflow",
-        aliases=["app"],
-        help="A specific workflow.",  # noqa: E501
+        aliases=["wf"],
+        help="A specific workflow.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )  # noqa: E501
+    )
     parser_deploy_workflow.add_argument(
         dest="name", type=str, help="Workflow to deploy."
     )
@@ -347,14 +347,14 @@ def __bb_common_arguments__(parser):
     parser.add_argument(
         "-d",
         "--debug",
-        help="Enable Building Block debug mode. Overrides log_level",  # noqa: E501
+        help="Enable Building Block debug mode. Overrides log_level",
         action="store_true",
     )
     parser.add_argument(
         "-l",
         "--log_level",
         help="Set logging level",
-        choices=["debug", "info", "warning", "error", "critical"],  # noqa: E501
+        choices=["debug", "info", "warning", "error", "critical"],
         type=str,
     )
     parser.add_argument(
@@ -367,7 +367,7 @@ def __bb_common_arguments__(parser):
     parser.add_argument("--memory", help="Memory requirement", type=int)
     parser.add_argument(
         "--mount_points",
-        help="Comma separated alias:folder to be mounted in the container",  # noqa: E501
+        help="Comma separated alias:folder to be mounted in the container",
         type=str,
     )
     # Hidden flag for advanced users
