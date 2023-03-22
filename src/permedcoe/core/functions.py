@@ -172,6 +172,18 @@ def deploy_bb(debug, log_level, name):
     # Init logging
     init_logging(debug, log_level)
     logging.debug("Checking Building Block: %s" % str(name))
+    __deploy_bb__(name)
+
+
+def __deploy_bb__(name):
+    """Deploys the requested building block.
+
+    Args:
+        name (str): Building block name.
+
+    Raises:
+        Exception: Not found building block.
+    """
     url = "https://github.com/PerMedCoE/BuildingBlocks/tree/main/%s" % str(name)
     bb_exists = __check_url__(url)
     container_folder = get_container_path()
@@ -192,7 +204,7 @@ def __install_bb__(name):
            "-m",
            "pip",
            "install",
-           "\'git+https://github.com/PerMedCoE/BuildingBlocks.git@main#subdirectory=%s\'" % str(name)
+           "git+https://github.com/PerMedCoE/BuildingBlocks.git@main#subdirectory=%s" % str(name)
     ]
     logging.debug("Installing Building Block %s" % str(name))
     command_runner(cmd)
@@ -227,14 +239,18 @@ def __download_container__(name, container_folder):
         name (str): Building block name.
         container_folder (str): Container destination folder.
     """
-    logging.debug("Downloading %s container" % name)
-    cmd = [
-        "apptainer",
-        "pull",
-        os.path.join(container_folder, name + ".sif"),
-        "docker://ghcr.io/jaantollander/%s:latest" % name
-    ]
-    command_runner(cmd)
+    container_file = os.path.join(container_folder, name + ".sif")
+    if os.path.exists(container_file) and os.path.isfile(container_file):
+        logging.debug("Container %s already exists" % name)
+    else:
+        logging.debug("Downloading %s container" % name)
+        cmd = [
+            "apptainer",
+            "pull",
+            container_file,
+            "docker://ghcr.io/jaantollander/%s:latest" % name
+        ]
+        command_runner(cmd)
 
 
 def deploy_workflow(debug, log_level, name):
@@ -351,25 +367,21 @@ def __install_workflow_building_blocks__(workflow_path):
     Return:
         Boolean: True if success. False otherwise
     """
-    bb_install_script = os.path.join(workflow_path, "BuildingBlocks", "install_BBs.sh")
-    if os.path.exists(bb_install_script) and os.path.isfile(bb_install_script):
-        try:
-            expected_permission = "744"
-            os.chmod(bb_install_script, int(expected_permission, base=8))
-            subprocess.call(bb_install_script)
-        except Exception as e:
-            print(e)
-            return False
+    wf_required_bbs = os.path.join(workflow_path, "BuildingBlocks", "required_BBs.txt")
+    if os.path.exists(wf_required_bbs) and os.path.isfile(wf_required_bbs):
+        required_bbs = []
+        with open(wf_required_bbs) as fd:
+            for line in fd:
+                l = line.strip()
+                if not l.startswith("#"):
+                    required_bbs.append(l)
+        for bb in required_bbs:
+            __deploy_bb__(bb)
         return True
     else:
         print("ERROR: Could not install the workflow building blocks.")
-        print(
-            "REASON: Does not contain the required Building Block installation script: %s"
-            % str(bb_install_script)
-        )
-        print(
-            "        Please, contact PerMedCoE team in order to fix it (https://permedcoe.eu/contact/)."
-        )
+        print("REASON: Does not contain the required Building Blocks file: %s" % str(wf_required_bbs))
+        print("        Please, contact PerMedCoE team in order to fix it (https://permedcoe.eu/contact/).")
         return False
 
 
