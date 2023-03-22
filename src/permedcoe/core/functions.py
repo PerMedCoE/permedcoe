@@ -10,6 +10,7 @@ from urllib.error import HTTPError
 import zipfile
 
 from permedcoe.base import invoker
+from permedcoe.bb import get_container_path
 from permedcoe.utils.log import init_logging
 from permedcoe.utils.executor import command_runner
 from permedcoe.utils.artifact import adapt_name
@@ -173,20 +174,67 @@ def deploy_bb(debug, log_level, name):
     logging.debug("Checking Building Block: %s" % str(name))
     url = "https://github.com/PerMedCoE/BuildingBlocks/tree/main/%s" % str(name)
     bb_exists = __check_url__(url)
+    container_folder = get_container_path()
     if bb_exists:
-        print(
-            "INFO: Run the following command to install the %s Building Block"
-            % str(name)
-        )
-        print("      (tune the command flags according to your pip setup)")
-        print()
-        print(
-            "      python3 -m pip install 'git+https://github.com/PerMedCoE/BuildingBlocks.git@main#subdirectory=%s'"
-            % str(name)
-        )
-        print()
+        __install_bb__(name)
+        __deploy_container__(name, container_folder)
     else:
         print("ERROR: Building Block %s not found." % str(name))
+
+
+def __install_bb__(name):
+    """Install the required building block.
+
+    Args:
+        name (str): Building block name.
+    """
+    cmd = ["python3",
+           "-m",
+           "pip",
+           "install",
+           "\'git+https://github.com/PerMedCoE/BuildingBlocks.git@main#subdirectory=%s\'" % str(name)
+    ]
+    logging.debug("Installing Building Block %s" % str(name))
+    command_runner(cmd)
+
+
+def __deploy_container__(name, container_folder):
+    """Donwload and deploy the building block associated container.
+
+    Args:
+        name (str): Building block name.
+        container_folder (str): Container destination folder.
+    """
+    bb_module = importlib.import_module(name + "_BB")
+    container_name = bb_module.definitions.CONTAINER
+    if isinstance(container_name, list):
+        # More than one container required
+        logging.debug("More than one container required for this Building Block: %s" % container_name)
+        for container in container_name:
+            __download_container__(name, container_folder)
+    elif isinstance(container_name, str):
+        # Single container required
+        logging.debug("One container required for this Building Block: %s" % container_name)
+        __download_container__(name, container_folder)
+    else:
+        raise Exception("ERROR: Container name must be string or list of strings. Not: %s" % container_name)
+
+
+def __download_container__(name, container_folder):
+    """Donwload the building block associated container.
+
+    Args:
+        name (str): Building block name.
+        container_folder (str): Container destination folder.
+    """
+    logging.debug("Downloading %s container" % name)
+    cmd = [
+        "apptainer",
+        "pull",
+        os.path.join(container_folder, name + ".sif"),
+        "docker://ghcr.io/jaantollander/%s:latest" % name
+    ]
+    command_runner(cmd)
 
 
 def deploy_workflow(debug, log_level, name):

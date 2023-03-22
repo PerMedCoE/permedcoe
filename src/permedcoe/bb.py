@@ -12,7 +12,11 @@ def get_container_path():
     # Container definition environment variable
     CONTAINER_PATH_VN = "PERMEDCOE_IMAGES"
     if CONTAINER_PATH_VN in os.environ:
-        return os.environ[CONTAINER_PATH_VN]
+        container_path_vn = os.environ[CONTAINER_PATH_VN]
+        if os.path.isdir(container_path_vn):
+            return container_path_vn
+        else:
+            raise Exception("Container path does not exit: %s" % container_path_vn)
     else:
         raise Exception("Please define %s environment variable with the path." % CONTAINER_PATH_VN)
 
