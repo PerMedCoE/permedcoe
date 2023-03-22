@@ -4,7 +4,7 @@
 
 # Decorator selector
 try:
-    # Running with PyCOMPSs with take these imports
+    # Running with PyCOMPSs will take these imports
     from pycompss.api.container import container
     from pycompss.api.constraint import constraint
     from pycompss.api.binary import binary
@@ -21,6 +21,7 @@ try:
     from pycompss.api.parameter import STDIN
     from pycompss.api.parameter import STDOUT
     from pycompss.api.parameter import STDERR
+    TMPDIR = "pycompss_sandbox"
     # raise ImportError  # NOSONAR
 except ImportError:
     # Without PyCOMPSs it will take the core
@@ -40,6 +41,7 @@ except ImportError:
     from permedcoe.core.decorators import STDIN
     from permedcoe.core.decorators import STDOUT
     from permedcoe.core.decorators import STDERR
+    TMPDIR = "None"
 
 # Public functions
 from permedcoe.base import get_environment

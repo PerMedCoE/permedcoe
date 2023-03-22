@@ -1,3 +1,5 @@
+import os
+
 from permedcoe.utils.arguments import single_bb_sysarg_parser as __bb_parser__
 from permedcoe.utils.arguments import load_parameters_from_json as __bb_param_loader__
 from permedcoe.utils.preproc import preprocessing as __preprocessing__
@@ -16,7 +18,7 @@ def get_environment():
 
 
 def set_debug(level=False):
-    """ Sets the global debug variable
+    """ Sets the global debug variable.
 
     Args:
         debug: True to enable debug. False otherwise.
@@ -26,13 +28,15 @@ def set_debug(level=False):
     __init_logging__(level)
 
 
-def invoker(function, arguments_info=None) -> None:
+def invoker(function, arguments_info=None, require_tmpdir=False) -> None:
     """ Parse the input parameters (from sys.argv) and then invoke the
     given BB function.
 
     Args:
         function (function): Building block function to invoke.
-        arguments_info (function): Building block arguments information.
+        arguments_info (function or string): Building block arguments information.
+                                             Can be json with parameters.
+        require_tmpdir (boolean): If the --tmpdir is required.
     Returns:
         None
     """
@@ -52,6 +56,13 @@ def invoker(function, arguments_info=None) -> None:
     arguments = __bb_parser__(bb_arguments)
     if arguments.debug:
         print("Building Block arguments:\n%s" % str(bb_arguments))
+    if require_tmpdir:
+        if not hasattr(arguments, "tmpdir"):
+            raise Exception("ERROR: --tmpdir flag must be defined")
+        elif not isinstance(arguments.tmpdir, str):
+            raise Exception("ERROR: --tmpdir flag is required")
+        elif not os.path.isdir(arguments.tmpdir):
+            raise Exception("ERROR: --tmpdir flag is required and directory must exist")
     # Set execution related conditions
     __cmd_flags__.DEBUG = arguments.debug
     __cmd_flags__.DISABLE_CONTAINER = arguments.disable_container
