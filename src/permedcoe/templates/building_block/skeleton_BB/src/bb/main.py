@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # Decorator imports
 from permedcoe import constraint       # To define constraints needs (e.g. number of cores)
 from permedcoe import container        # To define container related needs
@@ -16,6 +14,7 @@ from permedcoe import DIRECTORY_INOUT  # To define directory type and direction
 # Other permedcoe available functionalities
 from permedcoe import Arguments        # Arguments definition
 from permedcoe import get_environment  # Get variables from invocation (tmpdir, processes, gpus, memory)
+from permedcoe import TMPDIR           # Default tmpdir key
 
 # Import single container and assets definitions
 from NEW_NAME.definitions import NEW_NAME_ASSETS_PATH  # binary could be in this folder
@@ -38,11 +37,13 @@ def function_name(*args, **kwargs):
 
 
 @container(engine="SINGULARITY", image=NEW_NAME_CONTAINER)
-@binary(binary="cp")                                        # TODO: Define the binary to be used (can be within NEW_NAME_ASSETS_PATH).
+@binary(binary="cp")                                        # TODO: Define the binary to be used (can be within NEW_NAME_ASSETS_PATH (e.g. my_binary.sh)).
 @task(input_file=FILE_IN, output_file=FILE_OUT)             # TODO: Define the inputs and output parameters.
-def building_block_task(input_file=None,                    # TODO: Define a representative task name
-                        output_file=None,
-                        verbose="-v"):                      # TODO: Define the binary parameters
+def building_block_task(                                    # TODO: Define a representative task name.
+    input_file=None,                                        # TODO: Define the binary parameters.
+    output_file=None,                                       # TODO: Define the binary parameters.
+    verbose="-v"):                                          # TODO: Define the binary parameters.
+    # TODO: Add tmpdir=TMPDIR if the tmpdir will be used by the asset script.
     """Summary.
 
     The Definition is equal to:
@@ -53,30 +54,33 @@ def building_block_task(input_file=None,                    # TODO: Define a rep
     :type input_file: str, optional
     :param verbose: Verbose description, defaults to "-v"
     :type verbose: str, optional
+    # :param tmpdir: Temporary directory, defaults to TMPDIR
+    # :type tmpdir: str, optional
     """
     pass
 
 
-def invoke(input, output, config):
+def invoke(arguments, config):
     """Common interface.
 
     Args:
-        input (str): Input file path.
-        output (str): Output directory path.
+        arguments (args): Building Block parsed arguments.
         config (dict): Configuration dictionary.
     Returns:
         None
     """
-    # TODO: Define the arguments required by the Building Block in definition.json file
+    # TODO: Define the arguments required by the Building Block in definition.json file.
 
-    # TODO: Declare how to run the binary specification (convert config into building_block_task call)
+    # TODO: Declare how to run the binary specification (convert config into building_block_task call).
     # Sample config parameter get:
     #     operation = config["operation"]
     # Then operation can be used to tune the building_block_task parameters or even be a parameter.
     # Sample permedcoe environment get:
     #     env_vars = get_environment()
     # Retrieves the extra flags from permedcoe.
-    input_file = input[0]
-    output_file = output[0]
+    input_file = arguments.model
+    output_file = arguments.result
+    # tmpdir = arguments.tmpdir
     building_block_task(input_file=input_file,
                         output_file=output_file)
+                        # tmpdir=tmpdir)
