@@ -10,6 +10,7 @@ try:
     from pycompss.api.binary import binary
     from pycompss.api.task import task
     from pycompss.api.mpi import mpi
+    from pycompss.api.julia import julia
     from pycompss.api.parameter import FILE_IN
     from pycompss.api.parameter import FILE_OUT
     from pycompss.api.parameter import FILE_INOUT
@@ -22,12 +23,13 @@ try:
     from pycompss.api.parameter import STDOUT
     from pycompss.api.parameter import STDERR
     TMPDIR = "pycompss_sandbox"
-    # raise ImportError  # NOSONAR
+    # raise ImportError
 except ImportError:
     # Without PyCOMPSs it will take the core
     from permedcoe.core.decorators import container
     from permedcoe.core.decorators import constraint
     from permedcoe.core.decorators import binary
+    from permedcoe.core.decorators import julia
     from permedcoe.core.decorators import task
     from permedcoe.core.decorators import mpi
     from permedcoe.core.decorators import FILE_IN
