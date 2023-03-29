@@ -124,6 +124,32 @@ class Binary(object):
         return wrapped_f
 
 
+class Julia(object):
+    """
+    Julia class (decorator style)
+
+    Gets the julia related information.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Decorator parameters
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self, f):
+        def wrapped_f(*args, **kwargs):
+            # args and kwargs are the function invocation parameters
+            # Delegate the needed info to the task through the **kwargs.
+            kwargs["binary"] = "julia"
+            kwargs["script"] = self.kwargs["script"]
+            if "project" in self.kwargs:
+                kwargs["project"] = self.kwargs["project"]
+            else:
+                kwargs["project"] = ""
+            return f(*args, **kwargs)
+        return wrapped_f
+
+
 class Task(object):
     """
     Task class (decorator style) that defines the behaviour of a
@@ -160,6 +186,12 @@ class Task(object):
                 self.image = None
             self.runner = kwargs.pop("runner", None)
             self.binary = kwargs.pop("binary")
+            if self.binary == "julia":
+                # Could be using the @julia decorator
+                if "project" in kwargs:
+                    self.binary += " --project=%s" % kwargs.pop("project")
+                if "script" in kwargs:
+                    self.binary += " %s" % kwargs.pop("script")
             self.computing_nodes = kwargs.pop("computing_nodes", 1)
             self.computing_units = kwargs.pop("computing_units", 1)
             self.env_vars = kwargs.pop("environment")
@@ -298,6 +330,7 @@ class Task(object):
 # Naming convention with lowercase
 task = Task
 binary = Binary
+julia = Julia
 container = Container
 mpi = Mpi
 constraint = Constraint
