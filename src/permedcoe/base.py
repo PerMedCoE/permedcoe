@@ -6,6 +6,7 @@ from permedcoe.utils.preproc import preprocessing as __preprocessing__
 from permedcoe.utils.log import init_logging as __init_logging__
 from permedcoe.utils.environ import get_environment as __get_environment__
 import permedcoe.core.environment as __cmd_flags__
+from permedcoe.core.constants import BB_ASSETS_PATH
 
 
 def get_environment():
@@ -28,7 +29,7 @@ def set_debug(level=False):
     __init_logging__(level)
 
 
-def invoker(function, arguments_info=None, require_tmpdir=False) -> None:
+def invoker(function, arguments_info=None, require_tmpdir=False, assets_path=None) -> None:
     """ Parse the input parameters (from sys.argv) and then invoke the
     given BB function.
 
@@ -37,6 +38,7 @@ def invoker(function, arguments_info=None, require_tmpdir=False) -> None:
         arguments_info (function or string): Building block arguments information.
                                              Can be json with parameters.
         require_tmpdir (boolean): If the --tmpdir is required.
+        assets_path (string): Path where the assets are. If None, it will try to find it.
     Returns:
         None
     """
@@ -67,6 +69,9 @@ def invoker(function, arguments_info=None, require_tmpdir=False) -> None:
     __cmd_flags__.DEBUG = arguments.debug
     __cmd_flags__.DISABLE_CONTAINER = arguments.disable_container
     set_debug(arguments.debug)
+    # Export assets path if provided
+    if isinstance(assets_path, str):
+        os.environ[BB_ASSETS_PATH] = assets_path
     # Preprocess
     cfg = __preprocessing__(arguments)
     if old_school_args:
