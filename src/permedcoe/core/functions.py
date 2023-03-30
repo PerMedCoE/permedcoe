@@ -35,17 +35,25 @@ def execute_building_block(arguments):
     invoke_function = getattr(bb_module, "invoke")
     # Check if json with parameters is defined
     params_json_file = os.path.join(bb_module.__path__[0], "definition.json")
+    # Check assests path
+    try:
+        assets_path = bb_module.definitions.ASSETS_PATH
+    except AttributeError:
+        raise Exception("ERROR: The Building Block %s does not contain ASSETS_PATH defined in definitions.py file" % bb_name)
     if os.path.isfile(params_json_file):
         __set_bb_sysargv__(building_block)
-        invoker(invoke_function, params_json_file)
+        invoker(function=invoke_function,
+                arguments_info=params_json_file,
+                assets_path=assets_path)
     else:
         try:
             __set_bb_sysargv__(building_block)
             arguments_function = getattr(bb_module, "arguments_info")
-            invoker(invoke_function, arguments_function)
+            invoker(function=invoke_function,
+                    arguments_info=arguments_function)
         except AttributeError:
             # old school BB
-            invoker(invoke_function)
+            invoker(function=invoke_function)
 
 
 def __set_bb_sysargv__(name):

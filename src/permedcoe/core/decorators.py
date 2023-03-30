@@ -5,6 +5,7 @@ which wrap the container, binary and execution actions.
 
 import os
 import sys
+import importlib
 import inspect
 import subprocess
 import logging
@@ -21,6 +22,7 @@ from permedcoe.core.constants import PERMEDCOE_GPUS
 from permedcoe.core.constants import PERMEDCOE_MEMORY
 from permedcoe.core.constants import PERMEDCOE_MOUNT_POINTS
 from permedcoe.core.constants import SEPARATOR
+from permedcoe.core.constants import BB_ASSETS_PATH
 
 
 # ################################################################# #
@@ -146,6 +148,10 @@ class Julia(object):
                 kwargs["project"] = self.kwargs["project"]
             else:
                 kwargs["project"] = ""
+            if "environment" in self.kwargs:
+                kwargs["environment"] = self.kwargs["environment"]
+            else:
+                kwargs["environment"] = []
             return f(*args, **kwargs)
         return wrapped_f
 
@@ -303,7 +309,11 @@ class Task(object):
         user_mount_paths = None
         if PERMEDCOE_MOUNT_POINTS in os.environ:
             user_mount_paths = os.environ[PERMEDCOE_MOUNT_POINTS]
-        # Removes duplicated
+        # Look into the building block
+        if BB_ASSETS_PATH in os.environ:
+            bb_assets_path = os.environ[BB_ASSETS_PATH]
+            mount_paths.append(bb_assets_path)
+        # Remove duplicated
         if mount_paths:
             mount_paths = list(set(mount_paths))
         return mount_paths, update_paths, user_mount_paths
