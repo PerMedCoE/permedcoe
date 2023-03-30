@@ -226,7 +226,7 @@ def __deploy_container__(name, container_folder):
         container_folder (str): Container destination folder.
     """
     bb_module = importlib.import_module(name + "_BB")
-    container_name = bb_module.definitions.CONTAINER
+    container_name = bb_module.definitions.CONTAINER_NAME
     if isinstance(container_name, list):
         # More than one container required
         logging.debug("More than one container required for this Building Block: %s" % container_name)
