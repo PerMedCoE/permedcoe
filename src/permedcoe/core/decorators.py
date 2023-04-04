@@ -276,27 +276,27 @@ class Task(object):
                 # Remove file name and keep only the folder
                 if isinstance(kwargs[k], list):
                     for element in kwargs[k]:
-                        path, name = os.path.split(os.path.realpath(element))
+                        path, name = os.path.split(os.path.abspath(element))
                         update_paths[k] = os.path.join(path, name)
                 else:
-                    path, name = os.path.split(os.path.realpath(kwargs[k]))
+                    path, name = os.path.split(os.path.abspath(kwargs[k]))
                     update_paths[k] = os.path.join(path, name)
             elif v == DIRECTORY_IN or v == DIRECTORY_INOUT or v == DIRECTORY_OUT:  # noqa: E503
                 if isinstance(kwargs[k], list):
                     for element in kwargs[k]:
                         if os.path.exists(element):
-                            path = os.path.realpath(element)
+                            path = os.path.abspath(element)
                         elif v == DIRECTORY_OUT:
                             os.mkdir(element)
-                            path = os.path.realpath(element)
+                            path = os.path.abspath(element)
                         else:
                             raise Exception("Input directory does not exist: %s" % str(element))  # noqa: E503
                 else:
                     if os.path.exists(kwargs[k]):
-                        path = os.path.realpath(kwargs[k])
+                        path = os.path.abspath(kwargs[k])
                     elif v == DIRECTORY_OUT:
                         os.mkdir(kwargs[k])
-                        path = os.path.realpath(kwargs[k])
+                        path = os.path.abspath(kwargs[k])
                     else:
                         raise Exception("Input directory does not exist: %s" % str(element))  # noqa: E503
             else:
