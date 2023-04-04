@@ -45,6 +45,7 @@ class PerMedBB(object):
             # Single binary execution
             self.sing_command_comp["exe"] = exe_path
         self.sing_command_comp["mounts"] = ""
+        mount_paths = sorted(mount_paths, key=len)
         for path in mount_paths:
             self.add_bind(path, path)
         if user_mount_paths:
