@@ -23,7 +23,10 @@ try:
     from pycompss.api.parameter import STDOUT
     from pycompss.api.parameter import STDERR
     TMPDIR = "pycompss_sandbox"
-    # raise ImportError
+    from pycompss.util.context import CONTEXT as __CONTEXT__
+    if not __CONTEXT__.in_pycompss():
+        # Not running within PyCOMPSs context
+        raise ImportError
 except ImportError:
     # Without PyCOMPSs it will take the core
     from permedcoe.core.decorators import container

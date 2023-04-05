@@ -9,7 +9,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="permedcoe",
-    version="0.0.10",
+    version="0.0.11",
     description="This package provides the common interface for the Building Blocks.",
     long_description=long_description,
     long_description_content_type="text/markdown",
