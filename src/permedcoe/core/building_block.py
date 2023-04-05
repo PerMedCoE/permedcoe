@@ -5,6 +5,8 @@ to interact with the container infrastructure (Singularity).
 
 import os
 import logging
+import re
+from permedcoe.utils.executor import command_runner
 
 
 class PerMedBB(object):
@@ -117,4 +119,5 @@ class PerMedBB(object):
             else:
                 command = command + " " + scc[c]
         logging.info("Launching the command: %s" % command)
-        os.system(command)
+        cmd = re.sub(" +", " ", command.strip()).split(" ")
+        command_runner(cmd)

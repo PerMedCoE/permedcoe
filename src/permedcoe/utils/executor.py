@@ -26,11 +26,11 @@ def command_runner(cmd):
     logging.debug("Exit code: %s" % str(return_code))
 
     print(SEPARATOR, flush=True)
-    print("------------ STDOUT ------------",
+    print("----------------- STDOUT -----------------",
           flush=True)
     print(stdout, flush=True)
     if stderr:
-        print("------------ STDERR ------------",
+        print("----------------- STDERR -----------------",
               file=sys.stderr, flush=True)
         print(stderr, file=sys.stderr, flush=True)
 
