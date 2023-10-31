@@ -256,7 +256,7 @@ def __download_container__(name, container_folder):
             "apptainer",
             "pull",
             container_file,
-            "docker://ghcr.io/jaantollander/%s:latest" % name
+            "docker://ghcr.io/permedcoe/%s:latest" % name
         ]
         command_runner(cmd)
 
