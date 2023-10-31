@@ -16,6 +16,7 @@ from permedcoe.utils.executor import command_runner
 from permedcoe.utils.artifact import adapt_name
 from permedcoe.utils.artifact import rename_folder
 from permedcoe.utils.artifact import show_todo
+from permedcoe.utils.exceptions import PerMedCoEException
 
 
 BUILDING_BLOCK_LABELS = ("building_block", "bb")
@@ -39,7 +40,7 @@ def execute_building_block(arguments):
     try:
         assets_path = bb_module.definitions.ASSETS_PATH
     except AttributeError:
-        raise Exception("ERROR: The Building Block %s does not contain ASSETS_PATH defined in definitions.py file" % bb_name)
+        raise PerMedCoEException("ERROR: The Building Block %s does not contain ASSETS_PATH defined in definitions.py file" % bb_name)
     if os.path.isfile(params_json_file):
         __set_bb_sysargv__(building_block)
         invoker(function=invoke_function,
@@ -148,7 +149,7 @@ def create_template(debug, log_level, artifact, name, app_type=None):
         else:
             skeleton_path = app_path
     else:
-        raise Exception("Unrecognized template type: %s" % str(artifact))
+        raise PerMedCoEException("Unrecognized template type: %s" % str(artifact))
     # Copy from sources to destination
     destination_path = os.path.join(current_path, name)
     logging.debug("Copying artifact to: %s" % str(destination_path))
@@ -237,7 +238,7 @@ def __deploy_container__(name, container_folder):
         logging.debug("One container required for this Building Block: %s" % container_name)
         __download_container__(name, container_folder)
     else:
-        raise Exception("ERROR: Container name must be string or list of strings. Not: %s" % container_name)
+        raise PerMedCoEException("ERROR: Container name must be string or list of strings. Not: %s" % container_name)
 
 
 def __download_container__(name, container_folder):

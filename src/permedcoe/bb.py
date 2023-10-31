@@ -2,6 +2,8 @@
 
 import os
 
+from permedcoe.utils.exceptions import PerMedCoEException
+
 
 def get_container_path():
     """Retrieve the PerMedCoE container images path.
@@ -16,9 +18,9 @@ def get_container_path():
         if os.path.isdir(container_path_vn):
             return container_path_vn
         else:
-            raise Exception("Container path does not exit: %s" % container_path_vn)
+            raise PerMedCoEException("Container path does not exit: %s" % container_path_vn)
     else:
-        raise Exception("Please define %s environment variable with the path." % CONTAINER_PATH_VN)
+        raise PerMedCoEException("Please define %s environment variable with the path." % CONTAINER_PATH_VN)
 
 
 CONTAINER_PATH = get_container_path()

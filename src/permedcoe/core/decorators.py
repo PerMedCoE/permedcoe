@@ -14,6 +14,8 @@ from collections import OrderedDict
 from permedcoe.core.building_block import PerMedBB
 import permedcoe.core.environment as cmd_flags
 from permedcoe.utils.exceptions import ContainerImageException
+from permedcoe.utils.exceptions import PerMedCoEException
+
 
 # Environment variable names
 from permedcoe.core.constants import PERMEDCOE_TMPDIR
@@ -290,7 +292,7 @@ class Task(object):
                             os.mkdir(element)
                             path = os.path.abspath(element)
                         else:
-                            raise Exception("Input directory does not exist: %s" % str(element))  # noqa: E503
+                            raise PerMedCoEException("Input directory does not exist: %s" % str(element))  # noqa: E503
                 else:
                     if os.path.exists(kwargs[k]):
                         path = os.path.abspath(kwargs[k])
@@ -298,9 +300,9 @@ class Task(object):
                         os.mkdir(kwargs[k])
                         path = os.path.abspath(kwargs[k])
                     else:
-                        raise Exception("Input directory does not exist: %s" % str(element))  # noqa: E503
+                        raise PerMedCoEException("Input directory does not exist: %s" % str(element))  # noqa: E503
             else:
-                raise Exception("Unexpected task tag found.")
+                raise PerMedCoEException("Unexpected task tag found.")
             # Relative path to absolute
             mount_paths.append(path)
         # Look into the environment

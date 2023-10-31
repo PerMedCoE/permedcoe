@@ -4,6 +4,7 @@ import json
 import sys
 
 from permedcoe.utils.user_arguments import Arguments
+from permedcoe.utils.exceptions import PerMedCoEException
 
 
 def parse_sys_argv():
@@ -256,7 +257,7 @@ def __bb_arguments_checks__(args, bb_arguments):
     if issues:
         for message in issues:
             print(message)
-        raise Exception("ERROR: Wrong or missing argument/s.")
+        raise PerMedCoEException("ERROR: Wrong or missing argument/s.")
 
 
 def __bb_specific_arguments__(parser, bb_arguments):
@@ -434,7 +435,7 @@ def load_parameters_from_json(parameters_file):
                         name=p_name, type=p_format, description=p_description, mode=mode
                     )
             else:
-                raise Exception(
+                raise PerMedCoEException(
                     "Unexpected parameter type %s (supported input | output)"
                     % str(p_type)
                 )
@@ -460,4 +461,4 @@ def __convert_format__(format):
     elif format in ["file", "folder"]:
         return str, format
     else:
-        raise Exception("Unsupported parameter type")
+        raise PerMedCoEException("Unsupported parameter type")

@@ -5,6 +5,7 @@ from permedcoe.core.constants import PERMEDCOE_PROCESSES
 from permedcoe.core.constants import PERMEDCOE_GPUS
 from permedcoe.core.constants import PERMEDCOE_MEMORY
 from permedcoe.core.constants import PERMEDCOE_MOUNT_POINTS
+from permedcoe.utils.exceptions import PerMedCoEException
 
 
 def set_environment(tmpdir=None,
@@ -30,7 +31,7 @@ def set_environment(tmpdir=None,
         if os.path.exists(tmpdir):
             os.environ[PERMEDCOE_TMPDIR] = tmpdir
         else:
-            raise Exception("TMPDIR: %s does not exist." % tmpdir)
+            raise PerMedCoEException("TMPDIR: %s does not exist." % tmpdir)
     if processes:
         os.environ[PERMEDCOE_PROCESSES] = processes
     if gpus:
