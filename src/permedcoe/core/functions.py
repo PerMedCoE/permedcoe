@@ -248,6 +248,7 @@ def __download_container__(name, container_folder):
         name (str): Building block name.
         container_folder (str): Container destination folder.
     """
+    name = name.lower()
     container_file = os.path.join(container_folder, name + ".sif")
     if os.path.exists(container_file) and os.path.isfile(container_file):
         logging.debug("Container %s already exists" % name)
