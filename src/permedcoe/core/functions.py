@@ -31,7 +31,7 @@ def execute_building_block(arguments):
     """
     # Building block invocation
     building_block = arguments.name
-    logging.info("Executing Building Block: %s" % str(building_block))
+    logging.info("Executing Building Block: %s", str(building_block))
     bb_module = importlib.import_module(building_block)
     invoke_function = getattr(bb_module, "invoke")
     # Check if json with parameters is defined
@@ -40,18 +40,21 @@ def execute_building_block(arguments):
     try:
         assets_path = bb_module.definitions.ASSETS_PATH
     except AttributeError:
-        raise PerMedCoEException("ERROR: The Building Block %s does not contain ASSETS_PATH defined in definitions.py file" % bb_name)
+        raise PerMedCoEException(
+            f"ERROR: The Building Block {bb_name} does not contain ASSETS_PATH defined in definitions.py file"
+        )
     if os.path.isfile(params_json_file):
         __set_bb_sysargv__(building_block)
-        invoker(function=invoke_function,
-                arguments_info=params_json_file,
-                assets_path=assets_path)
+        invoker(
+            function=invoke_function,
+            arguments_info=params_json_file,
+            assets_path=assets_path,
+        )
     else:
         try:
             __set_bb_sysargv__(building_block)
             arguments_function = getattr(bb_module, "arguments_info")
-            invoker(function=invoke_function,
-                    arguments_info=arguments_function)
+            invoker(function=invoke_function, arguments_info=arguments_function)
         except AttributeError:
             # old school BB
             invoker(function=invoke_function)
@@ -82,10 +85,10 @@ def execute_application(arguments):
     workflow_flags = arguments.flags
     # Init logging
     init_logging(arguments.debug, arguments.log_level)
-    logging.info("Executing Application: %s" % str(app_name))
-    logging.info("Parameters: %s" % str(app_parameters))
-    logging.info("Workflow manager: %s" % str(workflow_manager))
-    logging.info("Workflow flags: %s" % str(workflow_flags))
+    logging.info("Executing Application: %s", str(app_name))
+    logging.info("Parameters: %s", str(app_parameters))
+    logging.info("Workflow manager: %s", str(workflow_manager))
+    logging.info("Workflow flags: %s", str(workflow_flags))
     # Workflow manager selector
     command = []
     if workflow_manager == "pycompss":
@@ -126,9 +129,7 @@ def create_template(debug, log_level, artifact, name, app_type=None):
     # Prepare destination
     current_path = pathlib.Path().absolute()
     if os.path.exists(os.path.join(current_path, name)):
-        print(
-            "Can not create template. A folder with name %s already exists." % str(name)
-        )  # noqa: E501
+        print(f"Can not create template. A folder with name {name} already exists.")
         exit(1)
     # Prepare source
     egg_path = pathlib.Path(__file__).parent.parent.absolute()
@@ -149,13 +150,13 @@ def create_template(debug, log_level, artifact, name, app_type=None):
         else:
             skeleton_path = app_path
     else:
-        raise PerMedCoEException("Unrecognized template type: %s" % str(artifact))
+        raise PerMedCoEException(f"Unrecognized template type: {artifact}")
     # Copy from sources to destination
     destination_path = os.path.join(current_path, name)
-    logging.debug("Copying artifact to: %s" % str(destination_path))
+    logging.debug("Copying artifact to: %s", str(destination_path))
     shutil.copytree(skeleton_path, destination_path)
     # Adapt name into the files
-    logging.debug("Adapting name: %s to the artifact" % str(name))
+    logging.debug("Adapting name: %s to the artifact", str(name))
     adapt_name(name, destination_path)
     # Adapt folder name if needed
     if artifact in BUILDING_BLOCK_LABELS:
@@ -180,7 +181,7 @@ def deploy_bb(debug, log_level, name):
     """
     # Init logging
     init_logging(debug, log_level)
-    logging.debug("Checking Building Block: %s" % str(name))
+    logging.debug("Checking Building Block: %s", str(name))
     __deploy_bb__(name)
 
 
@@ -193,14 +194,14 @@ def __deploy_bb__(name):
     Raises:
         Exception: Not found building block.
     """
-    url = "https://github.com/PerMedCoE/BuildingBlocks/tree/main/%s" % str(name)
+    url = f"https://github.com/PerMedCoE/BuildingBlocks/tree/main/{name}"
     bb_exists = __check_url__(url)
     container_folder = get_container_path()
     if bb_exists:
         __install_bb__(name)
         __deploy_container__(name, container_folder)
     else:
-        print("ERROR: Building Block %s not found." % str(name))
+        print("ERROR: Building Block %s not found.", str(name))
 
 
 def __install_bb__(name):
@@ -209,13 +210,14 @@ def __install_bb__(name):
     Args:
         name (str): Building block name.
     """
-    cmd = ["python3",
-           "-m",
-           "pip",
-           "install",
-           "git+https://github.com/PerMedCoE/BuildingBlocks.git@main#subdirectory=%s" % str(name)
+    cmd = [
+        "python3",
+        "-m",
+        "pip",
+        "install",
+        f"git+https://github.com/PerMedCoE/BuildingBlocks.git@main#subdirectory={name}",
     ]
-    logging.debug("Installing Building Block %s" % str(name))
+    logging.debug("Installing Building Block %s", str(name))
     command_runner(cmd)
 
 
@@ -230,15 +232,22 @@ def __deploy_container__(name, container_folder):
     container_name = bb_module.definitions.CONTAINER_NAME
     if isinstance(container_name, list):
         # More than one container required
-        logging.debug("More than one container required for this Building Block: %s" % container_name)
+        logging.debug(
+            "More than one container required for this Building Block: %s",
+            container_name,
+        )
         for container in container_name:
-            __download_container__(name, container_folder)
+            __download_container__(container, container_folder)
     elif isinstance(container_name, str):
         # Single container required
-        logging.debug("One container required for this Building Block: %s" % container_name)
-        __download_container__(name, container_folder)
+        logging.debug(
+            "One container required for this Building Block: %s", container_name
+        )
+        __download_container__(container_name, container_folder)
     else:
-        raise PerMedCoEException("ERROR: Container name must be string or list of strings. Not: %s" % container_name)
+        raise PerMedCoEException(
+            f"ERROR: Container name must be string or list of strings. Not: {container_name}"
+        )
 
 
 def __download_container__(name, container_folder):
@@ -249,16 +258,21 @@ def __download_container__(name, container_folder):
         container_folder (str): Container destination folder.
     """
     name = name.lower()
-    container_file = os.path.join(container_folder, name + ".sif")
-    if os.path.exists(container_file) and os.path.isfile(container_file):
-        logging.debug("Container %s already exists" % name)
+    if name.endswith(".sif"):
+        container_name = name
+        name = os.path.splitext(name)[0]
     else:
-        logging.debug("Downloading %s container" % name)
+        container_name = f"f{name}.sif"
+    container_file = os.path.join(container_folder, container_name)
+    if os.path.exists(container_file) and os.path.isfile(container_file):
+        logging.debug("Container %s already exists", name)
+    else:
+        logging.debug("Downloading %s container", name)
         cmd = [
             "apptainer",
             "pull",
             container_file,
-            "docker://ghcr.io/permedcoe/%s:latest" % name
+            f"docker://ghcr.io/permedcoe/{name}:latest",
         ]
         command_runner(cmd)
 
@@ -276,61 +290,58 @@ def deploy_workflow(debug, log_level, name):
     """
     # Init logging
     init_logging(debug, log_level)
-    logging.debug("Checking Workflow: %s" % str(name))
-    url = "https://github.com/PerMedCoE/%s/" % str(name)
+    logging.debug("Checking Workflow: %s", str(name))
+    url = f"https://github.com/PerMedCoE/{name}/"
     workflow_exists = __check_url__(url)
     if workflow_exists:
-        logging.debug("Found Workflow: %s" % str(url))
-        zip_file = "https://github.com/PerMedCoE/%s/archive/refs/heads/main.zip" % str(
-            name
-        )
+        logging.debug("Found Workflow: %s", str(url))
+        zip_file = f"https://github.com/PerMedCoE/{name}/archive/refs/heads/main.zip"
         # Check if exists a file called main.zip in this folder before continuing
-        logging.debug("Checking if associated zip file exists: %s" % str(zip_file))
+        logging.debug("Checking if associated zip file exists: %s", str(zip_file))
         zip_exists = __check_url__(zip_file)
         if zip_exists:
-            logging.debug("Found zip file: %s" % str(zip_file))
+            logging.debug("Found zip file: %s", str(zip_file))
             # Download zip file in the current folder
             current_folder = os.getcwd()
             target_file = os.path.join(current_folder, "main.zip")
             if os.path.exists(target_file):
-                print("ERROR: A file named %s already exists." % str(target_file))
+                print(f"ERROR: A file named {target_file} already exists.")
                 print(
                     "       Please, try again in another folder or remove the existing 'main.zip' file."
                 )
             else:
                 # file with the same name does not exist in the current folder
-                logging.debug("Downloading zip file: %s" % str(zip_file))
+                logging.debug("Downloading zip file: %s", str(zip_file))
                 con = urllib.request.urlopen(zip_file)
                 with con as dl_zip_file:
                     with open(target_file, "wb") as out_file:
                         out_file.write(dl_zip_file.read())
-                logging.debug("Downloaded into: %s" % str(target_file))
+                logging.debug("Downloaded into: %s", str(target_file))
                 # Unzip the downloaded file
-                logging.debug("Unzipping file: %s" % str(target_file))
+                logging.debug("Unzipping file: %s", str(target_file))
                 with zipfile.ZipFile(target_file, "r") as zip_ref:
                     zip_ref.extractall(current_folder)
-                extracted_folder = os.path.join(current_folder, "%s-main" % str(name))
+                extracted_folder = os.path.join(current_folder, f"{name}-main")
                 logging.debug(
-                    "Unzipped file into the folder: %s" % str(extracted_folder)
+                    "Unzipped file into the folder: %s", str(extracted_folder)
                 )
                 # Rename folder
                 target_folder = os.path.join(current_folder, str(name))
                 logging.debug(
-                    "Renaming folder: %s to %s"
-                    % (str(extracted_folder), str(target_folder))
+                    "Renaming folder: %s to %s",
+                    str(extracted_folder),
+                    str(target_folder),
                 )
                 if os.path.exists(target_folder):
-                    print(
-                        "ERROR: A folder named %s already exists." % str(target_folder)
-                    )
+                    print(f"ERROR: A folder named {target_folder} already exists.")
                     print(
                         "       Please, try again in another folder or remove the existing folder."
                     )
                 else:
                     shutil.move(extracted_folder, target_folder)
-                    logging.debug("Final folder: %s" % str(target_folder))
+                    logging.debug("Final folder: %s", str(target_folder))
                 # Clean main.zip (downloaded file)
-                logging.debug("Cleaning downloaded file: %s" % str(target_file))
+                logging.debug("Cleaning downloaded file: %s", str(target_file))
                 os.remove(target_file)
                 print("SUCCESS: Workflow deployed.")
                 # Now install the workflow associated building blocks
@@ -338,17 +349,16 @@ def deploy_workflow(debug, log_level, name):
                 bb_installed = __install_workflow_building_blocks__(target_folder)
                 if bb_installed:
                     print(
-                        "SUCCESS: Building Blocks for %s successfully installed."
-                        % str(name)
+                        f"SUCCESS: Building Blocks for {name} successfully installed."
                     )
                     # Finally, give next steps information
                     __show_instructions__(target_folder, str(name))
                 else:
                     print("ERROR: Could not install the necessary Building Blocks")
         else:
-            print("ERROR: Could not found workflow %s zip file." % str(name))
+            print(f"ERROR: Could not found workflow {name} zip file.")
     else:
-        print("ERROR: Workflow %s not found." % str(name))
+        print(f"ERROR: Workflow {name} not found.")
 
 
 def __check_url__(url):
@@ -390,8 +400,12 @@ def __install_workflow_building_blocks__(workflow_path):
         return True
     else:
         print("ERROR: Could not install the workflow building blocks.")
-        print("REASON: Does not contain the required Building Blocks file: %s" % str(wf_required_bbs))
-        print("        Please, contact PerMedCoE team in order to fix it (https://permedcoe.eu/contact/).")
+        print(
+            f"REASON: Does not contain the required Building Blocks file: {wf_required_bbs}"
+        )
+        print(
+            "        Please, contact PerMedCoE team in order to fix it (https://permedcoe.eu/contact/)."
+        )
         return False
 
 
@@ -403,14 +417,14 @@ def __show_instructions__(target_folder, name):
         name (str): workflow name.
     """
     print("\nINFORMATION:\n")
-    print("\t- The workflow has been deployed in: %s" % target_folder)
+    print(f"\t- The workflow has been deployed in: {target_folder}")
     print("\t- Its associated building blocks have been installed.")
     print("\nNEXT STEPS:\n")
     print("\t- 1st: Make sure that you have installed the desired workflow manager:")
     print("\t       Currently supported: PyCOMPSs, Snakemake and NextFlow.")
     print("\t- 2nd: Go to the workflow folder: For example:")
     sample_path = os.path.join(target_folder, "Workflow", "PyCOMPSs")
-    print("\t       cd %s" % sample_path)
+    print(f"\t       cd {sample_path}")
     print(
         "\t- 3rd: Check if the workflow requires to prepare the sample dataset. For example:"
     )
@@ -425,6 +439,5 @@ def __show_instructions__(target_folder, name):
         "\t       CAUTION 2: launch.sh scripts are aimed to be used in supercomputers."
     )
     print(
-        "\nFor more information, please check the workflow documentation: https://github.com/PerMedCoE/%s"
-        % name
+        f"\nFor more information, please check the workflow documentation: https://github.com/PerMedCoE/{name}"
     )

@@ -59,7 +59,10 @@ def parse_sys_argv():
         dest="name", type=str, help="Building Block to execute"
     )
     parser_execute_bb.add_argument(
-        dest="parameters", type=str, nargs=argparse.REMAINDER, help="Building Block parameters"
+        dest="parameters",
+        type=str,
+        nargs=argparse.REMAINDER,
+        help="Building Block parameters",
     )
     parser_execute_app = subparsers_execute.add_parser(
         "application",
@@ -71,7 +74,10 @@ def parse_sys_argv():
         dest="name", type=str, help="Application to execute"
     )
     parser_execute_app.add_argument(
-        dest="parameters", type=str, nargs=argparse.REMAINDER, help="Application parameters"
+        dest="parameters",
+        type=str,
+        nargs=argparse.REMAINDER,
+        help="Application parameters",
     )
     parser_execute_app.add_argument(
         "-w",
@@ -168,7 +174,7 @@ def parse_sys_argv():
     # Check if the user does not include any argument
     if len(sys.argv) < 2:
         #  Show the usage
-        print(parser.print_usage())
+        parser.print_usage()
         sys.exit(1)
 
     arguments = parser.parse_args()
@@ -180,7 +186,7 @@ def parse_sys_argv():
         try:
             print(subparsers.choices[action].print_usage())
         except KeyError:
-            print(parser.print_usage())
+            parser.print_usage()
         sys.exit(1)
 
     return arguments
@@ -205,9 +211,9 @@ def single_bb_sysarg_parser(bb_arguments):
     __bb_common_arguments__(parser)
     args = parser.parse_args()
 
-    if hasattr(args, "mode") and args.mode == None:
+    if hasattr(args, "mode") and args.mode is None:
         #  Show the usage
-        print(parser.print_help())
+        parser.print_help()
         print("Please, specify the appropriate parameters")
         sys.exit(1)
     elif bb_arguments:
@@ -217,7 +223,7 @@ def single_bb_sysarg_parser(bb_arguments):
         # Check if the user does not include input and output
         if not args.input or not args.output:
             #  Show the usage
-            print(parser.print_help())
+            parser.print_help()
             print("Please, specify input and output")
             sys.exit(1)
 
@@ -239,21 +245,14 @@ def __bb_arguments_checks__(args, bb_arguments):
     print(arguments)
     input_arguments = arguments.get_inputs()
     issues = []
-    for k, v in input_arguments.items():
-        check = v.get_check()
-        to_check = vars(args)[k]
-        if check == "file":
-            if not os.path.isfile(to_check):
-                issues.append(
-                    "ERROR: Argument %s for file %s does not exist." % (k, to_check)
-                )
-        if check == "folder":
-            if not os.path.isdir(to_check):
-                issues.append(
-                    "ERROR: Argument %s for directory %s does not exist."
-                    % (k, to_check)
-                )
-    output_arguments = arguments.get_outputs()
+    for key, value in input_arguments.items():
+        check = value.get_check()
+        to_check = vars(args)[key]
+        if check == "file" and not os.path.isfile(to_check):
+            issues.append(f"ERROR: Argument {key} for file {to_check} does not exist.")
+        if check == "folder" and not os.path.isdir(to_check):
+            issues.append(f"ERROR: Argument {key} for directory {to_check} does not exist.")
+    _ = arguments.get_outputs()
     if issues:
         for message in issues:
             print(message)
@@ -273,34 +272,34 @@ def __bb_specific_arguments__(parser, bb_arguments):
         inputs = arguments["default"].get_inputs()
         for param_name, param in inputs.items():
             help_msg = __get_help_message__("INPUT", param)
-            parser_inner = parser.add_argument(
-                "--%s" % param_name, help=help_msg, type=param.get_type(), required=True
+            _ = parser.add_argument(
+                f"--{param_name}", help=help_msg, type=param.get_type(), required=True
             )
         outputs = arguments["default"].get_outputs()
         for param_name, param in outputs.items():
             help_msg = __get_help_message__("OUTPUT", param)
-            parser_inner = parser.add_argument(
-                "--%s" % param_name, help=help_msg, type=param.get_type(), required=True
+            _ = parser.add_argument(
+                f"--{param_name}", help=help_msg, type=param.get_type(), required=True
             )
     else:
         # More than one mode
         subparser = parser.add_subparsers(dest="mode")
-        for k, v in arguments.items():
-            parser_mode = subparser.add_parser(k)
-            inputs = v.get_inputs()
+        for key, value in arguments.items():
+            parser_mode = subparser.add_parser(key)
+            inputs = value.get_inputs()
             for param_name, param in inputs.items():
                 help_msg = __get_help_message__("INPUT", param)
-                parser_inner_mode = parser_mode.add_argument(
-                    "--%s" % param_name,
+                _ = parser_mode.add_argument(
+                    f"--{param_name}",
                     help=help_msg,
                     type=param.get_type(),
                     required=True,
                 )
-            outputs = v.get_outputs()
+            outputs = value.get_outputs()
             for param_name, param in outputs.items():
                 help_msg = __get_help_message__("OUTPUT", param)
-                parser_inner_mode = parser_mode.add_argument(
-                    "--%s" % param_name,
+                _ = parser_mode.add_argument(
+                    f"--{param_name}",
                     help=help_msg,
                     type=param.get_type(),
                     required=True,
@@ -317,10 +316,13 @@ def __get_help_message__(param_direction, param):
         The message associated for the given parameter.
     """
     if param.get_check() in ["file", "folder"]:
-        param_type = "%s (%s)" % (param.get_type().__name__, param.get_check())
+        param_name = param.get_type().__name__
+        param_check = param.get_check()
+        param_type = f"{param_name} ({param_check})"
     else:
         param_type = param.get_type().__name__
-    help_msg = "(%s - %s) %s" % (param_direction, param_type, param.get_description())
+    param_description = param.get_description()
+    help_msg = f"({param_direction} - {param_type}) {param_description}"
     return help_msg
 
 
@@ -436,29 +438,27 @@ def load_parameters_from_json(parameters_file):
                     )
             else:
                 raise PerMedCoEException(
-                    "Unexpected parameter type %s (supported input | output)"
-                    % str(p_type)
+                    f"Unexpected parameter type {p_type} (supported input | output)"
                 )
     return arguments
 
 
-def __convert_format__(format):
+def __convert_format__(input_format):
     """Convert format to the actual type.
 
     Args:
-        format (str): Input format.
+        input_format (str): Input format.
     Returns:
         The supported format type and format to be checked.
     """
-    if format == "str":
+    if input_format == "str":
         return str, str
-    elif format == "int":
+    if input_format == "int":
         return int, int
-    elif format == "float":
+    if input_format == "float":
         return float, float
-    elif format == "bool":
+    if input_format == "bool":
         return bool, bool
-    elif format in ["file", "folder"]:
-        return str, format
-    else:
-        raise PerMedCoEException("Unsupported parameter type")
+    if input_format in ["file", "folder"]:
+        return str, input_format
+    raise PerMedCoEException("Unsupported parameter type")

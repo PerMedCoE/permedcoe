@@ -1,4 +1,3 @@
-
 # Environment variables names:
 
 PERMEDCOE_TMPDIR = "PERMEDCOE_TMPDIR"

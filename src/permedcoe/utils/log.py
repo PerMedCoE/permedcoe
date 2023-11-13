@@ -10,7 +10,7 @@ LOGGING_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 
 
 def init_logging(debug=False, level=LOG_LEVEL_ERROR):
-    """ Initialize logging.
+    """Initialize logging.
     Supported levels: ["debug" | "info" | "warning" | "error" | "critical"]
 
     Args:

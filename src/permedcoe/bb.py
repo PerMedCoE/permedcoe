@@ -12,15 +12,17 @@ def get_container_path():
     :raises Exception: If the "PERMEDCOE_IMAGES" is not defined.
     """
     # Container definition environment variable
-    CONTAINER_PATH_VN = "PERMEDCOE_IMAGES"
-    if CONTAINER_PATH_VN in os.environ:
-        container_path_vn = os.environ[CONTAINER_PATH_VN]
-        if os.path.isdir(container_path_vn):
-            return container_path_vn
-        else:
-            raise PerMedCoEException("Container path does not exit: %s" % container_path_vn)
-    else:
-        raise PerMedCoEException("Please define %s environment variable with the path." % CONTAINER_PATH_VN)
+    container_path_vn = "PERMEDCOE_IMAGES"
+    if container_path_vn in os.environ:
+        container_path_vn_value = os.environ[container_path_vn]
+        if os.path.isdir(container_path_vn_value):
+            return container_path_vn_value
+        raise PerMedCoEException(
+            f"Container path does not exit: {container_path_vn_value}"
+        )
+    raise PerMedCoEException(
+        f"Please define {container_path_vn} environment variable with the path."
+    )
 
 
 CONTAINER_PATH = get_container_path()
@@ -32,11 +34,10 @@ def get_computing_units():
     :return: The value of the COMPUTING_UNITS environment variable as integer.
     """
     # Computing units for the tasks
-    COMPUTING_UNITS_VN = "COMPUTING_UNITS"
-    if COMPUTING_UNITS_VN in os.environ:
-        return int(os.environ[COMPUTING_UNITS_VN])
-    else:
-        return 1
+    computing_units_vn = "COMPUTING_UNITS"
+    if computing_units_vn in os.environ:
+        return int(os.environ[computing_units_vn])
+    return 1
 
 
 COMPUTING_UNITS = get_computing_units()

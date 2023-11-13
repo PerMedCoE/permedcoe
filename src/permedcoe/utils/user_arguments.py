@@ -14,10 +14,10 @@ class Argument:
         return self.check
 
     def __str__(self) -> str:
-        args_str = "\t- Type: %s\n" % self.type
-        args_str += "\t- Description: %s\n" % self.description
+        args_str = f"\t- Type: {self.type}\n"
+        args_str += f"\t- Description: {self.description}\n"
         if self.check:
-            args_str += "\t- Check: %s\n" % str(self.check)
+            args_str += f"\t- Check: {self.check}\n"
         return args_str
 
 
@@ -41,16 +41,15 @@ class ArgumentDirections:
     def __str__(self) -> str:
         args_str = ""
         for k, v in self.inputs.items():
-            args_str += "- Input: %s\n" % k
-            args_str += "%s" % v
+            args_str += f"- Input: {k}\n"
+            args_str += f"{v}"
         for k, v in self.outputs.items():
-            args_str += "- Output: %s\n" % k
-            args_str += "%s" % v
+            args_str += f"- Output: {k}\n"
+            args_str += f"{v}"
         return args_str
 
 
 class Arguments:
-
     def __init__(self):
         self.arguments = {}
         self.arguments["default"] = ArgumentDirections()
@@ -78,6 +77,6 @@ class Arguments:
     def __str__(self) -> str:
         args_str = ""
         for k, v in self.arguments.items():
-            args_str += "Mode: %s\n" % k
-            args_str += "Arguments: %s\n" % v
+            args_str += f"Mode: {k}\n"
+            args_str += f"Arguments: {v}\n"
         return args_str

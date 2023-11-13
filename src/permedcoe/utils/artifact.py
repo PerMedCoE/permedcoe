@@ -7,7 +7,7 @@ PARSING_PATH = "/PATH/TO/"
 
 
 def adapt_name(name, path):
-    """ Replace recursively into the given path they keyword with name.
+    """Replace recursively into the given path they keyword with name.
     Like a set recursively.
 
     Args:
@@ -15,20 +15,20 @@ def adapt_name(name, path):
         path (str): Path to find the files.
     """
     template_path = path + "/"
-    for directory_name, dirs, files in os.walk(path):
+    for directory_name, _, files in os.walk(path):
         for file_name in files:
             if not file_name.endswith(DO_NOT_PARSE):
                 file_path = os.path.join(directory_name, file_name)
-                with open(file_path) as f:
-                    s = f.read()
-                s = s.replace(PARSING_KEY, name)
-                s = s.replace(PARSING_PATH, template_path)
-                with open(file_path, "w") as f:
-                    f.write(s)
+                with open(file_path) as file_descriptor:
+                    content = file_descriptor.read()
+                content = content.replace(PARSING_KEY, name)
+                content = content.replace(PARSING_PATH, template_path)
+                with open(file_path, "w") as file_descriptor:
+                    file_descriptor.write(content)
 
 
 def rename_folder(name, path):
-    """ Adapt the building block folder name.
+    """Adapt the building block folder name.
 
     Args:
         name (str): Name to personalize the folder name.
@@ -40,7 +40,7 @@ def rename_folder(name, path):
 
 
 def show_todo(path):
-    """ Show on the screen all to do messages.
+    """Show on the screen all to do messages.
 
     Args:
         path (str): Artifact path.
@@ -48,7 +48,7 @@ def show_todo(path):
     print(SEPARATOR)
     print("To be completed:")
     print()
-    for directory_name, dirs, files in os.walk(path):
+    for directory_name, _, files in os.walk(path):
         for file_name in files:
             if not file_name.endswith(DO_NOT_PARSE):
                 file_path = os.path.join(directory_name, file_name)
@@ -57,18 +57,18 @@ def show_todo(path):
 
 
 def __show_work__(file_path):
-    """ Show the TODO messages of a given set of lines.
+    """Show the TODO messages of a given set of lines.
 
     Args:
         file_path (str): File to be analyzed.
     """
-    with open(file_path) as f:
-        lines = f.readlines()
+    with open(file_path) as file_descriptor:
+        lines = file_descriptor.readlines()
     position = 0
     for line in lines:
         if "TODO" in line:
             _, message = line.split("#")
-            print("- %s:(%s):\t%s" % (str(os.path.basename(file_path)),
-                                      str(position),
-                                      str(message).strip()))
+            file_name = str(os.path.basename(file_path))
+            stripped_message = str(message).strip()
+            print(f"- {file_name}:({position}):\t{stripped_message}")
         position += 1

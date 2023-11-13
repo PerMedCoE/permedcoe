@@ -19,13 +19,15 @@ def preprocessing(arguments):
     cmd_flags.DEBUG = arguments.debug
     cmd_flags.DISABLE_CONTAINER = arguments.disable_container
     # Export variables
-    set_environment(arguments.tmpdir,
-                    arguments.processes,
-                    arguments.gpus,
-                    arguments.memory,
-                    arguments.mount_points)
+    set_environment(
+        arguments.tmpdir,
+        arguments.processes,
+        arguments.gpus,
+        arguments.memory,
+        arguments.mount_points,
+    )
     # Show arguments
     logging.debug("Arguments:")
     for param, value in arguments.__dict__.items():
-        logging.debug("\t - " + str(param) + " : " + str(value))
+        logging.debug("\t - %s : %s", str(param), str(value))
     return cfg

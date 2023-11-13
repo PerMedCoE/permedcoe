@@ -4,10 +4,7 @@ which wrap the container, binary and execution actions.
 """
 
 import os
-import sys
-import importlib
 import inspect
-import subprocess
 import logging
 from collections import OrderedDict
 
@@ -30,6 +27,7 @@ from permedcoe.core.constants import BB_ASSETS_PATH
 # ################################################################# #
 # ########################## DECORATORS ########################### #
 # ################################################################# #
+
 
 class Container(object):
     """
@@ -54,6 +52,7 @@ class Container(object):
                 kwargs["engine"] = "SINGULARITY"
             kwargs["image"] = self.kwargs["image"]
             return f(*args, **kwargs)
+
         return wrapped_f
 
 
@@ -73,6 +72,7 @@ class Constraint(object):
             # Delegate the needed info to the task through the **kwargs.
             kwargs["computing_units"] = self.kwargs["computing_units"]
             return f(*args, **kwargs)
+
         return wrapped_f
 
 
@@ -94,12 +94,15 @@ class Mpi(object):
             # Delegate the needed info to the task through the **kwargs.
             kwargs["runner"] = self.kwargs["runner"]
             kwargs["binary"] = self.kwargs["binary"]
-            kwargs["computing_nodes"] = self.kwargs["computing_nodes"]  # noqa TODO: ignored since it requires node names
+            kwargs["computing_nodes"] = self.kwargs[
+                "computing_nodes"
+            ]  # noqa TODO: ignored since it requires node names
             if "environment" in self.kwargs:
                 kwargs["environment"] = self.kwargs["environment"]
             else:
                 kwargs["environment"] = []
             return f(*args, **kwargs)
+
         return wrapped_f
 
 
@@ -125,6 +128,7 @@ class Binary(object):
             else:
                 kwargs["environment"] = []
             return f(*args, **kwargs)
+
         return wrapped_f
 
 
@@ -155,6 +159,7 @@ class Julia(object):
             else:
                 kwargs["environment"] = []
             return f(*args, **kwargs)
+
         return wrapped_f
 
 
@@ -171,6 +176,13 @@ class Task(object):
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
+        self.engine = None
+        self.image = None
+        self.runner = None
+        self.binary = None
+        self.computing_nodes = 1
+        self.computing_units = 1
+        self.env_vars = None
 
     def __call__(self, f):
         def wrapped_f(*args, **kwargs):
@@ -197,31 +209,31 @@ class Task(object):
             if self.binary == "julia":
                 # Could be using the @julia decorator
                 if "project" in kwargs:
-                    self.binary += " --project=%s" % kwargs.pop("project")
+                    self.binary += " --project=" + str(kwargs.pop("project"))
                 if "script" in kwargs:
-                    self.binary += " %s" % kwargs.pop("script")
+                    self.binary += " " + str(kwargs.pop("script"))
             self.computing_nodes = kwargs.pop("computing_nodes", 1)
             self.computing_units = kwargs.pop("computing_units", 1)
             self.env_vars = kwargs.pop("environment")
             logging.debug(SEPARATOR)
             if run_in_container:
-                logging.debug("Container engine          : %s" % self.engine)
-                logging.debug("Container image           : %s" % self.image)
-            logging.debug("Container runner          : %s" % self.runner)
-            logging.debug("Container binary          : %s" % self.binary)
-            logging.debug("Container computing_nodes : %s" % self.computing_nodes)  # noqa: E503
-            logging.debug("Container computing_units : %s" % self.computing_units)  # noqa: E503
-            logging.debug("Container env vars        : %s" % self.env_vars)
+                logging.debug("Container engine          : %s", self.engine)
+                logging.debug("Container image           : %s", self.image)
+            logging.debug("Container runner          : %s", self.runner)
+            logging.debug("Container binary          : %s", self.binary)
+            logging.debug("Container computing_nodes : %s", self.computing_nodes)
+            logging.debug("Container computing_units : %s", self.computing_units)
+            logging.debug("Container env vars        : %s", self.env_vars)
             logging.debug(SEPARATOR)
 
             # Parameters provided by the user:
             defaults = self.__get_defaults__(f)
             flags = OrderedDict(defaults, **kwargs)
             flags_list = list(flags.values())
-            logging.debug("Provided flags: %s" % str(kwargs))
+            logging.debug("Provided flags: %s", str(kwargs))
             # To increase debugging:
-            # logging.debug("Default flags: %s" % str(defaults))
-            logging.debug("User flags: %s" % str(flags_list))
+            # logging.debug("Default flags: %s", str(defaults))
+            logging.debug("User flags: %s", str(flags_list))
             logging.debug(SEPARATOR)
 
             # Checks:
@@ -230,8 +242,9 @@ class Task(object):
                 raise ContainerImageException(self.image)
 
             # Look for mount paths:
-            mount_paths, update_paths, user_mount_paths = \
-                self.__find_mount_paths__(kwargs)
+            mount_paths, update_paths, user_mount_paths = self.__find_mount_paths__(
+                kwargs
+            )
 
             if update_paths:
                 # There are paths that need to be fixed in flags list
@@ -242,24 +255,27 @@ class Task(object):
             if run_in_container:
                 logging.debug("Mount paths:")
                 for path in mount_paths:
-                    logging.debug("- %s" % path)
+                    logging.debug("- %s", path)
                 logging.debug(SEPARATOR)
 
             # Act:
-            BB = PerMedBB(self.image,
-                          self.runner,
-                          self.binary,
-                          self.computing_nodes,
-                          self.computing_units,
-                          mount_paths,
-                          user_mount_paths,
-                          self.env_vars,
-                          flags_list)
+            BB = PerMedBB(
+                self.image,
+                self.runner,
+                self.binary,
+                self.computing_nodes,
+                self.computing_units,
+                mount_paths,
+                user_mount_paths,
+                self.env_vars,
+                flags_list,
+            )
             BB.launch(run_in_container=run_in_container)
+
         return wrapped_f
 
     def __find_mount_paths__(self, kwargs):
-        """ Looks for mount paths into the give input/output files/directories.
+        """Looks for mount paths into the give input/output files/directories.
 
         Args:
             kwargs (dict): Keyword dictionary (invocation parameters)
@@ -283,7 +299,7 @@ class Task(object):
                 else:
                     path, name = os.path.split(os.path.abspath(kwargs[k]))
                     update_paths[k] = os.path.join(path, name)
-            elif v == DIRECTORY_IN or v == DIRECTORY_INOUT or v == DIRECTORY_OUT:  # noqa: E503
+            elif v == DIRECTORY_IN or v == DIRECTORY_INOUT or v == DIRECTORY_OUT:
                 if isinstance(kwargs[k], list):
                     for element in kwargs[k]:
                         if os.path.exists(element):
@@ -292,7 +308,9 @@ class Task(object):
                             os.mkdir(element)
                             path = os.path.abspath(element)
                         else:
-                            raise PerMedCoEException("Input directory does not exist: %s" % str(element))  # noqa: E503
+                            raise PerMedCoEException(
+                                f"Input directory does not exist: {element}"
+                            )
                 else:
                     if os.path.exists(kwargs[k]):
                         path = os.path.abspath(kwargs[k])
@@ -300,7 +318,9 @@ class Task(object):
                         os.mkdir(kwargs[k])
                         path = os.path.abspath(kwargs[k])
                     else:
-                        raise PerMedCoEException("Input directory does not exist: %s" % str(element))  # noqa: E503
+                        raise PerMedCoEException(
+                            f"Input directory does not exist: {element}"
+                        )
             else:
                 raise PerMedCoEException("Unexpected task tag found.")
             # Relative path to absolute
@@ -322,7 +342,7 @@ class Task(object):
 
     @staticmethod
     def __get_defaults__(func):
-        """ Retrieve the default parameters of the given function
+        """Retrieve the default parameters of the given function
 
         Args:
             func (function): Function to be inspected.
@@ -332,11 +352,13 @@ class Task(object):
                          default value as its value.
         """
         signature = inspect.signature(func)
-        return OrderedDict({
-            k: v.default
-            for k, v in signature.parameters.items()
-            if v.default is not inspect.Parameter.empty
-        })
+        return OrderedDict(
+            {
+                k: v.default
+                for k, v in signature.parameters.items()
+                if v.default is not inspect.Parameter.empty
+            }
+        )
 
 
 # Naming convention with lowercase
@@ -347,7 +369,7 @@ container = Container
 mpi = Mpi
 constraint = Constraint
 
-# Parameter definitons
+# Parameter definitions
 FILE_IN = "FILE_IN"
 FILE_OUT = "FILE_OUT"
 FILE_INOUT = "FILE_INOUT"

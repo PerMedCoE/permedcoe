@@ -11,7 +11,7 @@ from permedcoe.core.constants import BB_ASSETS_PATH
 
 
 def get_environment():
-    """ Retrieve the environment variables set on call as dictionary.
+    """Retrieve the environment variables set on call as dictionary.
 
     Returns:
         dict: Dictionary containing the environment set on call.
@@ -20,7 +20,7 @@ def get_environment():
 
 
 def set_debug(level=False):
-    """ Sets the global debug variable.
+    """Sets the global debug variable.
 
     Args:
         debug: True to enable debug. False otherwise.
@@ -30,8 +30,10 @@ def set_debug(level=False):
     __init_logging__(level)
 
 
-def invoker(function, arguments_info=None, require_tmpdir=False, assets_path=None) -> None:
-    """ Parse the input parameters (from sys.argv) and then invoke the
+def invoker(
+    function, arguments_info=None, require_tmpdir=False, assets_path=None
+) -> None:
+    """Parse the input parameters (from sys.argv) and then invoke the
     given BB function.
 
     Args:
@@ -62,10 +64,12 @@ def invoker(function, arguments_info=None, require_tmpdir=False, assets_path=Non
     if require_tmpdir:
         if not hasattr(arguments, "tmpdir"):
             raise __PerMedCoEException__("ERROR: --tmpdir flag must be defined")
-        elif not isinstance(arguments.tmpdir, str):
+        if not isinstance(arguments.tmpdir, str):
             raise __PerMedCoEException__("ERROR: --tmpdir flag is required")
-        elif not os.path.isdir(arguments.tmpdir):
-            raise __PerMedCoEException__("ERROR: --tmpdir flag is required and directory must exist")
+        if not os.path.isdir(arguments.tmpdir):
+            raise __PerMedCoEException__(
+                "ERROR: --tmpdir flag is required and directory must exist"
+            )
     # Set execution related conditions
     __cmd_flags__.DEBUG = arguments.debug
     __cmd_flags__.DISABLE_CONTAINER = arguments.disable_container
