@@ -10,12 +10,21 @@ from permedcoe.utils.executor import command_runner
 
 
 class PerMedBB(object):
+    """PerMedCoE Building Block class."""
 
-    def __init__(self, img_path, mpi_runner, exe_path,
-                 computing_nodes, computing_units,
-                 mount_paths, user_mount_paths,
-                 env_vars, flags):
-        """ Constructor
+    def __init__(
+        self,
+        img_path,
+        mpi_runner,
+        exe_path,
+        computing_nodes,
+        computing_units,
+        mount_paths,
+        user_mount_paths,
+        env_vars,
+        flags,
+    ):
+        """Constructor
 
         Args:
             img_path (str): Container path.
@@ -31,18 +40,24 @@ class PerMedBB(object):
         self.img_path = img_path
         self.exe_path = exe_path
         self.flags = flags
+        self.computing_nodes = computing_nodes
+        self.computing_units = computing_units
 
         self.sing_command_comp = {}
         self.sing_command_comp["base"] = "singularity --silent"
         self.sing_command_comp["action"] = "exec"
-        self.sing_command_comp["action_flags"] = "--contain --cleanenv --pwd " + os.getcwd()  # noqa: E503
+        self.sing_command_comp["action_flags"] = (
+            "--contain --cleanenv --pwd " + os.getcwd()
+        )  # noqa: E503
         self.sing_command_comp["sif"] = img_path
         if mpi_runner:
             # MPI execution within the container
-            self.sing_command_comp["exe"] = [mpi_runner,
-                                             "-np",
-                                             self.computing_units,
-                                             exe_path]
+            self.sing_command_comp["exe"] = [
+                mpi_runner,
+                "-np",
+                self.computing_units,
+                exe_path,
+            ]
         else:
             # Single binary execution
             self.sing_command_comp["exe"] = exe_path
@@ -61,33 +76,35 @@ class PerMedBB(object):
         self.sing_command_comp["flags"] = flags
 
     def add_env(self, env_var):
-        """ Small helper function to add an environment variable to
+        """Small helper function to add an environment variable to
         singularity command line.
 
         Args:
             env_var (str): Environment variable.
         """
         if self.sing_command_comp["envs"] == "":
-            self.sing_command_comp["envs"] = "--env {}".format(env_var)
+            self.sing_command_comp["envs"] = f"--env {env_var}"
         else:
-            self.sing_command_comp["envs"] = \
-                self.sing_command_comp["envs"] + ",{}".format(env_var)
+            self.sing_command_comp["envs"] = (
+                self.sing_command_comp["envs"] + f",{env_var}"
+            )
 
     def add_bind(self, s, t):
-        """ Small helper function to add a bind point to singularity command line.
+        """Small helper function to add a bind point to singularity command line.
 
         Args:
             s (str): Source folder
             t (str): Destination folder
         """
         if self.sing_command_comp["mounts"] == "":
-            self.sing_command_comp["mounts"] = "-B {}:{}".format(s, t)
+            self.sing_command_comp["mounts"] = f"-B {s}:{t}"
         else:
-            self.sing_command_comp["mounts"] = \
-                self.sing_command_comp["mounts"] + ",{}:{}".format(s, t)
+            self.sing_command_comp["mounts"] = (
+                self.sing_command_comp["mounts"] + f",{s}:{t}"
+            )
 
     def launch(self, shell=False, run_in_container=True):
-        """ Executes the binary into the singularity container.
+        """Executes the binary into the singularity container.
 
         Args:
             shell (bool, optional): Action shell. Defaults to False.
@@ -95,19 +112,20 @@ class PerMedBB(object):
         """
         command = ""
         if run_in_container:
-            order = ["base",
-                     "action",
-                     "action_flags",
-                     "mounts",
-                     "envs",
-                     "sif",
-                     "exe",
-                     "flags"]
+            order = [
+                "base",
+                "action",
+                "action_flags",
+                "mounts",
+                "envs",
+                "sif",
+                "exe",
+                "flags",
+            ]
             if shell:
                 self.sing_command_comp["action"] = "shell"
         else:
-            order = ["exe",
-                     "flags"]
+            order = ["exe", "flags"]
         scc = self.sing_command_comp
         for c in order:
             if isinstance(scc[c], list):
@@ -118,6 +136,6 @@ class PerMedBB(object):
                         command = command + " " + str(elem_scc)
             else:
                 command = command + " " + scc[c]
-        logging.info("Launching the command: %s" % command)
+        logging.info("Launching the command: %s", command)
         cmd = re.sub(" +", " ", command.strip()).split(" ")
         command_runner(cmd)

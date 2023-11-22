@@ -9,7 +9,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="permedcoe",
-    version="0.0.11",
+    version="0.0.12",
     description="This package provides the common interface for the Building Blocks.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -30,6 +30,8 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
         "Environment :: Console",
     ],

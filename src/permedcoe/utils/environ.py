@@ -5,14 +5,13 @@ from permedcoe.core.constants import PERMEDCOE_PROCESSES
 from permedcoe.core.constants import PERMEDCOE_GPUS
 from permedcoe.core.constants import PERMEDCOE_MEMORY
 from permedcoe.core.constants import PERMEDCOE_MOUNT_POINTS
+from permedcoe.utils.exceptions import PerMedCoEException
 
 
-def set_environment(tmpdir=None,
-                    processes=None,
-                    gpus=None,
-                    memory=None,
-                    mount_points=None):
-    """ Sets the necessary environment variables from the given arguments.
+def set_environment(
+    tmpdir=None, processes=None, gpus=None, memory=None, mount_points=None
+):
+    """Sets the necessary environment variables from the given arguments.
 
     Args:
         tmpdir (str, optional): Temporary directory to be mounted.
@@ -30,7 +29,7 @@ def set_environment(tmpdir=None,
         if os.path.exists(tmpdir):
             os.environ[PERMEDCOE_TMPDIR] = tmpdir
         else:
-            raise Exception("TMPDIR: %s does not exist." % tmpdir)
+            raise PerMedCoEException(f"TMPDIR: {tmpdir} does not exist.")
     if processes:
         os.environ[PERMEDCOE_PROCESSES] = processes
     if gpus:
@@ -42,7 +41,7 @@ def set_environment(tmpdir=None,
 
 
 def get_environment():
-    """ Retrieve the environment variables set on call as dictionary.
+    """Retrieve the environment variables set on call as dictionary.
 
     Returns:
         dict: Dictionary containing the environment set on call.
@@ -56,6 +55,6 @@ def get_environment():
         env_vars["gpus"] = os.environ[PERMEDCOE_GPUS]
     if PERMEDCOE_MEMORY in os.environ:
         env_vars["memory"] = os.environ[PERMEDCOE_MEMORY]
-    if PERMEDCOE_MOUNT_POINT in os.environ:
-        env_vars["mount_points"] = os.environ[PERMEDCOE_MOUNT_POINT]
+    if PERMEDCOE_MOUNT_POINTS in os.environ:
+        env_vars["mount_points"] = os.environ[PERMEDCOE_MOUNT_POINTS]
     return env_vars

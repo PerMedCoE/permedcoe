@@ -16,7 +16,7 @@ def main():
     """
     # Parse sys.argv
     arguments = __parse_sys_argv__()
-    debug = True if arguments.debug else False
+    debug = bool(arguments.debug)
     # Action selector
     if arguments.action in ["execute", "x"]:
         if arguments.execute in ["building_block", "bb"]:

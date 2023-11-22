@@ -22,8 +22,10 @@ try:
     from pycompss.api.parameter import STDIN
     from pycompss.api.parameter import STDOUT
     from pycompss.api.parameter import STDERR
+
     TMPDIR = "pycompss_sandbox"
     from pycompss.util.context import CONTEXT as __CONTEXT__
+
     if not __CONTEXT__.in_pycompss():
         # Not running within PyCOMPSs context
         raise ImportError
@@ -46,6 +48,7 @@ except ImportError:
     from permedcoe.core.decorators import STDIN
     from permedcoe.core.decorators import STDOUT
     from permedcoe.core.decorators import STDERR
+
     TMPDIR = "None"
 
 # Public functions
